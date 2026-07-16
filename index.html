@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم عم شلتت - الفطير والأكل الفلاحي الأصيل</title>
+    
+    <!-- Google Fonts: Cairo (UI) & Amiri (Arabic Calligraphy Brand) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body class="light-mode">
+    
+    <!-- Background Ornament Elements for Premium Aesthetic -->
+    <div class="bg-ornament pattern-top"></div>
+    <div class="bg-ornament pattern-bottom"></div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Header & Navbar -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <span class="logo-text">عم شلتت</span>
+                <span class="logo-subtitle">أصل الطعم الفلاحي</span>
+            </div>
+            
+            <!-- Navbar Actions -->
+            <div class="nav-actions">
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="nav-btn" title="تغيير المظهر">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- Cart Button (Customer only) -->
+                <button id="cart-toggle" class="nav-btn cart-btn hidden">
+                    <i class="fa-solid fa-shopping-basket"></i>
+                    <span id="cart-badge" class="badge">0</span>
+                </button>
+
+                <!-- User Profile / Admin Mode Badge -->
+                <div id="user-badge" class="user-badge-container hidden">
+                    <span id="user-role-label" class="role-badge">زائر</span>
+                    <span id="user-email-display" class="user-email"></span>
+                </div>
+
+                <!-- Logout Button -->
+                <button id="logout-btn" class="nav-btn logout-btn hidden" title="تسجيل الخروج">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout Container -->
+    <main class="main-content">
+        
+        <!-- ================= AUTH VIEW ================= -->
+        <section id="auth-view" class="view-section active">
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button id="tab-login" class="auth-tab active">تسجيل الدخول</button>
+                    <button id="tab-signup" class="auth-tab">حساب جديد</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active">
+                    <h2 class="form-title">مرحباً بك في عم شلتت</h2>
+                    <p class="form-subtitle">سجل دخولك لتتمتع بأشهى المأكولات الفلاحية</p>
+                    
+                    <div class="form-group">
+                        <label for="login-email"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني أو الهاتف</label>
+                        <input type="email" id="login-email" required placeholder="name@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password"><i class="fa-solid fa-lock"></i> كلمة المرور</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember-me" checked>
+                            <span class="checkmark"></span>
+                            تذكرني
+                        </label>
+                        <a href="#" id="forgot-password" class="auth-link">نسيت كلمة المرور؟</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block btn-animate">
+                        <span>تسجيل الدخول</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    
+                    <p class="auth-switch-text">ليس لديك حساب؟ <a href="#" id="switch-to-signup" class="auth-link">إنشاء حساب جديد</a></p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form">
+                    <h2 class="form-title">إنشاء حساب جديد</h2>
+                    <p class="form-subtitle">انضم إلينا الآن واستمتع بالطلب المباشر</p>
+                    
+                    <div class="form-group">
+                        <label for="signup-email"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني</label>
+                        <input type="email" id="signup-email" required placeholder="name@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signup-password"><i class="fa-solid fa-lock"></i> كلمة المرور</label>
+                        <input type="password" id="signup-password" required placeholder="••••••••">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signup-confirm-password"><i class="fa-solid fa-shield-halved"></i> تأكيد كلمة المرور</label>
+                        <input type="password" id="signup-confirm-password" required placeholder="••••••••">
+                    </div>
+
+                    <!-- Role Select Button/Checkbox -->
+                    <div class="form-group">
+                        <label class="checkbox-container admin-checkbox">
+                            <input type="checkbox" id="signup-admin-role">
+                            <span class="checkmark"></span>
+                            <span class="admin-label-text"><i class="fa-solid fa-user-gear"></i> التسجيل كمدير للنظام (Admin)</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block btn-animate">
+                        <span>تم (إنشاء الحساب)</span>
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    
+                    <p class="auth-switch-text">لديك حساب بالفعل؟ <a href="#" id="switch-to-login" class="auth-link">تسجيل الدخول</a></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= CUSTOMER MENU VIEW ================= -->
+        <section id="customer-view" class="view-section hidden">
+            <!-- Hero Promo Banner -->
+            <div class="hero-banner">
+                <div class="hero-content">
+                    <h1>فطير مشلتت فلاحي سمن بلدي 100%</h1>
+                    <p>مخبوز في أفراننا التقليدية بحب وعناية، يقدم ساخناً مع العسل والقشطة الفلاحي.</p>
+                </div>
+            </div>
+
+            <!-- Controls Panel: Search, Category Filters, Sorting -->
+            <div class="controls-panel">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="ابحث عن وجبتك المفضلة...">
+                </div>
+                
+                <div class="category-filters-container">
+                    <div id="category-filters" class="category-filters">
+                        <button class="filter-btn active" data-category="all">الكل</button>
+                        <button class="filter-btn" data-category="Sandwiches">سندوتشات</button>
+                        <button class="filter-btn" data-category="Meals">وجبات</button>
+                        <button class="filter-btn" data-category="Drinks">مشروبات</button>
+                        <button class="filter-btn" data-category="Desserts">حلويات</button>
+                        <button class="filter-btn" data-category="Extras">إضافات</button>
+                    </div>
+                </div>
+
+                <div class="sort-box">
+                    <label for="sort-select"><i class="fa-solid fa-arrow-down-wide-short"></i> ترتيب حسب:</label>
+                    <select id="sort-select">
+                        <option value="default">الافتراضي</option>
+                        <option value="price-low">السعر: من الأقل للأعلى</option>
+                        <option value="price-high">السعر: من الأعلى للأقل</option>
+                        <option value="name-asc">الاسم: أ - ي</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Food Grid -->
+            <div class="menu-grid-container">
+                <div id="customer-menu-grid" class="food-grid">
+                    <!-- Dynamic Items Inject here -->
+                </div>
+                <div id="customer-no-results" class="no-results hidden">
+                    <i class="fa-regular fa-face-frown"></i>
+                    <h3>لم نجد أي مأكولات تطابق بحثك!</h3>
+                    <p>جرب البحث بكلمات أخرى أو اختر تصنيفاً مختلفاً.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ADMIN DASHBOARD VIEW ================= -->
+        <section id="admin-view" class="view-section hidden">
+            <div class="admin-header-row">
+                <div class="admin-title">
+                    <h2><i class="fa-solid fa-gauge-high"></i> لوحة تحكم الإدارة</h2>
+                    <p>إدارة الوجبات والأسعار والتصنيفات وتوافر المخزون</p>
+                </div>
+                <button id="admin-add-item-btn" class="btn btn-primary btn-animate">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>إضافة وجبة جديدة</span>
+                </button>
+            </div>
+
+            <!-- Admin Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">إجمالي الوجبات</span>
+                        <span id="stat-total-items" class="stat-val">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-list"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">التصنيفات النشطة</span>
+                        <span id="stat-categories" class="stat-val">5</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">غير متوفر بالمخزن</span>
+                        <span id="stat-out-of-stock" class="stat-val">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Controls -->
+            <div class="controls-panel">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="admin-search-input" placeholder="ابحث في قائمة الإدارة...">
+                </div>
+                
+                <div class="category-filters-container">
+                    <div id="admin-category-filters" class="category-filters">
+                        <button class="filter-btn active" data-category="all">الكل</button>
+                        <button class="filter-btn" data-category="Sandwiches">سندوتشات</button>
+                        <button class="filter-btn" data-category="Meals">وجبات</button>
+                        <button class="filter-btn" data-category="Drinks">مشروبات</button>
+                        <button class="filter-btn" data-category="Desserts">حلويات</button>
+                        <button class="filter-btn" data-category="Extras">إضافات</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Grid List -->
+            <div class="menu-grid-container">
+                <div id="admin-menu-grid" class="food-grid admin-grid">
+                    <!-- Dynamic Admin Items Inject here -->
+                </div>
+                <div id="admin-no-results" class="no-results hidden">
+                    <i class="fa-regular fa-face-frown"></i>
+                    <h3>لا توجد وجبات لعرضها!</h3>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= SHOPPING CART SIDEBAR drawer ================= -->
+    <div id="cart-drawer" class="cart-drawer">
+        <div class="cart-drawer-overlay"></div>
+        <div class="cart-drawer-content">
+            <div class="cart-header">
+                <h3><i class="fa-solid fa-shopping-basket"></i> سلة المشتريات</h3>
+                <button id="cart-close" class="close-btn">&times;</button>
+            </div>
+            
+            <div id="cart-items-container" class="cart-items-list">
+                <!-- Cart Items Dynamic Inject -->
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-summary-row">
+                    <span>المجموع الفرعي:</span>
+                    <span id="cart-subtotal">0.00 ج.م</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span>التوصيل:</span>
+                    <span class="free-delivery">مجاني بمناسبة الافتتاح</span>
+                </div>
+                <hr class="cart-divider">
+                <div class="cart-summary-row total-row">
+                    <span>الإجمالي الكلي:</span>
+                    <span id="cart-total">0.00 ج.م</span>
+                </div>
+                <button id="cart-checkout-btn" class="btn btn-primary btn-block btn-animate">
+                    <span>تأكيد الطلب (إرسال للمطبخ)</span>
+                    <i class="fa-solid fa-utensils"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ADD / EDIT ITEM MODAL (ADMIN) ================= -->
+    <div id="item-modal" class="modal-wrapper">
+        <div class="modal-overlay"></div>
+        <div class="modal-content-box">
+            <div class="modal-header">
+                <h3 id="modal-title">إضافة وجبة جديدة</h3>
+                <button id="modal-close" class="close-btn">&times;</button>
+            </div>
+            
+            <form id="item-form" class="modal-form">
+                <input type="hidden" id="modal-item-id">
+                
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="modal-item-name">اسم الوجبة</label>
+                        <input type="text" id="modal-item-name" required placeholder="مثال: فطير مشلتت كبير">
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="modal-item-price">السعر (ج.م)</label>
+                        <input type="number" id="modal-item-price" required min="1" step="0.5" placeholder="مثال: 120">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="modal-item-category">التصنيف</label>
+                        <select id="modal-item-category" required>
+                            <option value="Sandwiches">سندوتشات (Sandwiches)</option>
+                            <option value="Meals">وجبات (Meals)</option>
+                            <option value="Drinks">مشروبات (Drinks)</option>
+                            <option value="Desserts">حلويات (Desserts)</option>
+                            <option value="Extras">إضافات (Extras)</option>
+                        </select>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="modal-item-status">حالة التوفر</label>
+                        <select id="modal-item-status" required>
+                            <option value="in-stock">متوفر بالمخزن</option>
+                            <option value="out-of-stock">غير متوفر حالياً</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-item-desc">وصف قصير للوجبة</label>
+                    <textarea id="modal-item-desc" rows="3" required placeholder="مكونات الوجبة وطريقة تقديمها..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-item-image-select">اختر صورة الوجبة</label>
+                    <select id="modal-item-image-select" class="image-selector">
+                        <option value="assets/feteer.jpg">فطير مشلتت فلاحي (صورة محلية)</option>
+                        <option value="assets/hawawshi.jpg">حواوشي بلدي (صورة محلية)</option>
+                        <option value="https://images.unsplash.com/photo-1547058886-af77818bc7a8?auto=format&fit=crop&w=600&q=80">سندوتش طعمية / فلافل (رابط خارجي)</option>
+                        <option value="https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=600&q=80">أم علي / حلويات شرقية (رابط خارجي)</option>
+                        <option value="https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80">شاي بالنعناع / مشروبات ساخنة (رابط خارجي)</option>
+                        <option value="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80">ليمون نعناع / عصائر باردة (رابط خارجي)</option>
+                        <option value="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80">بطاطس محمرة (رابط خارجي)</option>
+                        <option value="custom">رابط صورة مخصص...</option>
+                    </select>
+                </div>
+
+                <div id="custom-image-url-group" class="form-group hidden">
+                    <label for="modal-item-image-custom">رابط صورة مخصص (URL)</label>
+                    <input type="url" id="modal-item-image-custom" placeholder="https://example.com/food.jpg">
+                </div>
+
+                <div class="modal-footer-actions">
+                    <button type="button" id="modal-cancel-btn" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ الوجبة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= ORDER SUCCESS MODAL ================= -->
+    <div id="success-modal" class="modal-wrapper">
+        <div class="modal-overlay"></div>
+        <div class="modal-content-box success-content text-center">
+            <div class="success-icon-container">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2>تم إرسال طلبك بنجاح!</h2>
+            <p>طلبك الآن قيد التحضير في مطبخ <strong>عم شلتت</strong> وسيكون جاهزاً للتسليم قريباً جداً.</p>
+            <div class="order-number">رقم الطلب: <span id="order-id-num">#5324</span></div>
+            <button id="success-modal-close" class="btn btn-primary btn-animate">حسناً، استمر بالتصفح</button>
+        </div>
+    </div>
+
+    <!-- Vanilla Javascript Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
