@@ -4,26 +4,44 @@
 const DEFAULT_MENU_ITEMS = [
     {
         id: "item_1",
-        name: "فطير مشلتت سادة",
-        description: "فطير مشلتت فلاحي مورق بالسمن البلدي الصافي، يخبز في فرن حجري تقليدي على طريقة أجدادنا.",
+        name: {
+            ar: "فطير مشلتت سادة",
+            en: "Plain Feteer Meshaltet"
+        },
+        description: {
+            ar: "فطير مشلتت فلاحي مورق بالسمن البلدي الصافي، يخبز في فرن حجري تقليدي على طريقة أجدادنا.",
+            en: "Traditional rural Egyptian flaky pastry made with pure local ghee, baked in a stone oven."
+        },
         price: 85,
         category: "Meals",
-        image: "assets/feteer.jpg",
+        image: "assets/feteer_plain.jpg",
         status: "in-stock"
     },
     {
         id: "item_2",
-        name: "فطير مشلتت بالعسل والقشطة",
-        description: "فطيرة مشلتت ساخنة مغطاة بطبقة من القشطة الفلاحي الطازجة والعسل الأبيض أو العسل الأسود حسب اختيارك.",
+        name: {
+            ar: "فطير مشلتت بالعسل والقشطة",
+            en: "Feteer with Honey & Cream"
+        },
+        description: {
+            ar: "فطيرة مشلتت ساخنة مغطاة بطبقة من القشطة الفلاحي الطازجة والعسل الأبيض أو العسل الأسود حسب اختيارك.",
+            en: "Hot feteer meshaltet served with fresh rural clotted cream (qashta), white honey, and black molasses."
+        },
         price: 110,
         category: "Desserts",
-        image: "assets/feteer.jpg",
+        image: "assets/feteer_honey.jpg",
         status: "in-stock"
     },
     {
         id: "item_3",
-        name: "حواوشي بلدي عم شلتت",
-        description: "خبز بلدي طازج محشو باللحم البلدي المفروم والمتبل بخلطة بهارات عم شلتت السرية، يخبز حتى القرمشة.",
+        name: {
+            ar: "حواوشي بلدي عم شلتت",
+            en: "Om Shaltet Baladi Hawawshi"
+        },
+        description: {
+            ar: "خبز بلدي طازج محشو باللحم البلدي المفروم والمتبل بخلطة بهارات عم شلتت السرية، يخبز حتى القرمشة.",
+            en: "Fresh local bread stuffed with minced beef seasoned with Om Shaltet's secret spices, baked until crispy."
+        },
         price: 65,
         category: "Sandwiches",
         image: "assets/hawawshi.jpg",
@@ -31,8 +49,14 @@ const DEFAULT_MENU_ITEMS = [
     },
     {
         id: "item_4",
-        name: "سندوتش فلافل بالخلطة الفلاحي",
-        description: "فلافل ساخنة ومقرمشة مع طماطم، خيار، طحينة، وخلطة فلاحي خاصة داخل خبز بلدي ساخن.",
+        name: {
+            ar: "سندوتش فلافل بالخلطة الفلاحي",
+            en: "Falahi Falafel Sandwich"
+        },
+        description: {
+            ar: "فلافل ساخنة ومقرمشة مع طماطم، خيار، طحينة، وخلطة فلاحي خاصة داخل خبز بلدي ساخن.",
+            en: "Crispy hot falafels with tomato, cucumber, sesame tahini, and rural dressing inside fresh flatbread."
+        },
         price: 15,
         category: "Sandwiches",
         image: "https://images.unsplash.com/photo-1547058886-af77818bc7a8?auto=format&fit=crop&w=600&q=80",
@@ -40,8 +64,14 @@ const DEFAULT_MENU_ITEMS = [
     },
     {
         id: "item_5",
-        name: "طاجن أم علي بالمكسرات الفاخرة",
-        description: "حلوى أم علي التقليدية بالرقاق والحليب الطازج والقشطة البلدي، مزينة بالفسدق، اللوز، وجوز الهند.",
+        name: {
+            ar: "طاجن أم علي بالمكسرات الفاخرة",
+            en: "Premium Om Ali Tagen"
+        },
+        description: {
+            ar: "حلوى أم علي التقليدية بالرقاق والحليب الطازج والقشطة البلدي، مزينة بالفسدق، اللوز، وجوز الهند.",
+            en: "Traditional dessert made of baked pastry layers, hot milk, fresh cream, topped with nuts and coconut."
+        },
         price: 55,
         category: "Desserts",
         image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=600&q=80",
@@ -49,8 +79,14 @@ const DEFAULT_MENU_ITEMS = [
     },
     {
         id: "item_6",
-        name: "كوب شاي بالنعناع البلدي",
-        description: "شاي أحمر كشري مخمر بعناية مع أوراق النعناع البلدي الطازج والمنعش.",
+        name: {
+            ar: "كوب شاي بالنعناع البلدي",
+            en: "Baladi Mint Tea Glass"
+        },
+        description: {
+            ar: "شاي أحمر كشري مخمر بعناية مع أوراق النعناع البلدي الطازج والمنعش.",
+            en: "Rich red tea brewed with fresh green local mint leaves."
+        },
         price: 12,
         category: "Drinks",
         image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80",
@@ -58,8 +94,14 @@ const DEFAULT_MENU_ITEMS = [
     },
     {
         id: "item_7",
-        name: "عصير ليمون بالنعناع فريش",
-        description: "عصير ليمون طازج ومثلج ممزوج بقطع النعناع الأخضر المنعش، مثالي لأيام الصيف.",
+        name: {
+            ar: "عصير ليمون بالنعناع فريش",
+            en: "Fresh Lemon Mint Juice"
+        },
+        description: {
+            ar: "عصير ليمون طازج ومثلج ممزوج بقطع النعناع الأخضر المنعش، مثالي لأيام الصيف.",
+            en: "Iced freshly squeezed lemonade blended with green mint leaves, ideal for hot days."
+        },
         price: 25,
         category: "Drinks",
         image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
@@ -67,8 +109,14 @@ const DEFAULT_MENU_ITEMS = [
     },
     {
         id: "item_8",
-        name: "طبق بطاطس فلاحي محمرة",
-        description: "بطاطس ذهبية مقرمشة ومتبلة بملح وكمون، تقدم ساخنة مع الكاتشب.",
+        name: {
+            ar: "طبق بطاطس فلاحي محمرة",
+            en: "Falahi French Fries Plate"
+        },
+        description: {
+            ar: "بطاطس ذهبية مقرمشة ومتبلة بملح وكمون، تقدم ساخنة مع الكاتشب.",
+            en: "Crispy golden rustic fries seasoned with salt and cumin, served hot with ketchup."
+        },
         price: 20,
         category: "Extras",
         image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80",
@@ -76,11 +124,17 @@ const DEFAULT_MENU_ITEMS = [
     },
     {
         id: "item_9",
-        name: "عسل أسود بالطحينة وجبنة قديمة",
-        description: "طبق مشكل فلاحي يضم جبنة قديمة بالطماطم وزيت الزيتون، وعسل أسود ممزوج بالطحينة السمسم.",
+        name: {
+            ar: "عسل أسود بالطحينة وجبنة قديمة",
+            en: "Black Molasses, Tahini & Mesh Old Cheese"
+        },
+        description: {
+            ar: "طبق مشكل فلاحي يضم جبنة قديمة بالطماطم وزيت الزيتون، وعسل أسود ممزوج بالطحينة السمسم.",
+            en: "A rural platter containing old mesh cheese with tomatoes and olive oil, and black molasses with sesame tahini."
+        },
         price: 35,
         category: "Extras",
-        image: "https://images.unsplash.com/photo-1514517604298-cf80e0fb7f1e?auto=format&fit=crop&w=600&q=80",
+        image: "assets/honey_cheese.jpg",
         status: "in-stock"
     }
 ];
@@ -94,24 +148,45 @@ let state = {
     customerSort: "default",
     adminFilter: "all",
     adminSearch: "",
-    currentTheme: "light-mode"
+    currentTheme: "light-mode",
+    language: "ar",
+    deliveryType: "delivery", // 'delivery' or 'pickup'
+    activeOrder: null,
+    adminSubView: "menu", // 'menu' or 'orders'
+    adminOrdersFilter: "all",
+    adminOrdersSearch: ""
 };
 
 // Seed LocalStorage
 function initDatabase() {
+    // Database migration/upgrade to support bilingual keys and new assets
+    const dbVer = localStorage.getItem("om_shaltet_db_ver");
+    if (dbVer !== "4.0") {
+        localStorage.removeItem("om_shaltet_menu");
+        localStorage.setItem("om_shaltet_db_ver", "4.0");
+    }
+
     // Menu database
     if (!localStorage.getItem("om_shaltet_menu")) {
         localStorage.setItem("om_shaltet_menu", JSON.stringify(DEFAULT_MENU_ITEMS));
     }
     state.menuItems = JSON.parse(localStorage.getItem("om_shaltet_menu"));
 
-    // Users seed (default admin and user accounts)
+    // Users seed (default admin and user accounts with phone, address, dob)
     if (!localStorage.getItem("om_shaltet_users")) {
         const initialUsers = [
-            { email: "admin@test.com", password: "123", role: "admin" },
-            { email: "user@test.com", password: "123", role: "user" }
+            { email: "admin@test.com", password: "123", role: "admin", mobile: "01012345678", address: "المكتب الرئيسي - وسط البلد", dob: "1990-01-01" },
+            { email: "user@test.com", password: "123", role: "user", mobile: "01234567890", address: "12 شارع التسعين، التجمع الخامس", dob: "1995-05-05" }
         ];
         localStorage.setItem("om_shaltet_users", JSON.stringify(initialUsers));
+    }
+    
+    // Load saved language
+    state.language = localStorage.getItem("om_shaltet_lang") || "ar";
+    
+    // Initialize empty orders list if not present
+    if (!localStorage.getItem("om_shaltet_orders")) {
+        localStorage.setItem("om_shaltet_orders", JSON.stringify([]));
     }
 }
 
@@ -130,11 +205,15 @@ const DOM = {
     userRoleLabel: document.getElementById("user-role-label"),
     userEmailDisplay: document.getElementById("user-email-display"),
     logoutBtn: document.getElementById("logout-btn"),
+    langToggle: document.getElementById("lang-toggle"),
+    langText: document.getElementById("lang-text"),
+    trackOrderBtn: document.getElementById("track-order-btn"),
     
     // View containers
     authView: document.getElementById("auth-view"),
     customerView: document.getElementById("customer-view"),
     adminView: document.getElementById("admin-view"),
+    trackOrderView: document.getElementById("track-order-view"),
     
     // Auth Forms
     tabLogin: document.getElementById("tab-login"),
@@ -162,6 +241,7 @@ const DOM = {
     statTotalItems: document.getElementById("stat-total-items"),
     statCategories: document.getElementById("stat-categories"),
     statOutOfStock: document.getElementById("stat-out-of-stock"),
+    statRevenue: document.getElementById("stat-revenue"),
     
     // Cart Drawer
     cartDrawer: document.getElementById("cart-drawer"),
@@ -204,6 +284,8 @@ function navigateTo(viewName) {
     DOM.customerView.classList.remove("active");
     DOM.adminView.classList.add("hidden");
     DOM.adminView.classList.remove("active");
+    DOM.trackOrderView.classList.add("hidden");
+    DOM.trackOrderView.classList.remove("active");
 
     // Activate the requested view
     if (viewName === "auth") {
@@ -216,6 +298,8 @@ function navigateTo(viewName) {
         DOM.userBadge.classList.add("hidden");
         DOM.logoutBtn.classList.add("hidden");
         DOM.cartToggle.classList.add("hidden");
+        DOM.trackOrderBtn.classList.add("hidden");
+        DOM.langToggle.classList.remove("hidden"); // Show for auth
     } else if (viewName === "customer") {
         DOM.customerView.classList.remove("hidden");
         void DOM.customerView.offsetWidth;
@@ -225,10 +309,12 @@ function navigateTo(viewName) {
         DOM.userBadge.classList.remove("hidden");
         DOM.logoutBtn.classList.remove("hidden");
         DOM.cartToggle.classList.remove("hidden");
+        DOM.trackOrderBtn.classList.remove("hidden");
+        DOM.langToggle.classList.add("hidden"); // Hide language toggle
         
-        DOM.userRoleLabel.textContent = "زبون";
+        DOM.userRoleLabel.textContent = state.language === 'en' ? "Customer" : "زبون";
         DOM.userRoleLabel.style.backgroundColor = "var(--primary-brown)";
-        DOM.userEmailDisplay.textContent = state.currentUser ? state.currentUser.email : "زائر";
+        DOM.userEmailDisplay.textContent = state.currentUser ? state.currentUser.email : (state.language === 'en' ? "Guest" : "زائر");
         
         renderCustomerMenu();
     } else if (viewName === "admin") {
@@ -240,12 +326,26 @@ function navigateTo(viewName) {
         DOM.userBadge.classList.remove("hidden");
         DOM.logoutBtn.classList.remove("hidden");
         DOM.cartToggle.classList.add("hidden");
+        DOM.trackOrderBtn.classList.add("hidden");
+        DOM.langToggle.classList.add("hidden"); // Hide language toggle
         
-        DOM.userRoleLabel.textContent = "مشرف النظام";
+        DOM.userRoleLabel.textContent = state.language === 'en' ? "Admin" : "مشرف النظام";
         DOM.userRoleLabel.style.backgroundColor = "var(--success-color)";
-        DOM.userEmailDisplay.textContent = state.currentUser ? state.currentUser.email : "مدير";
+        DOM.userEmailDisplay.textContent = state.currentUser ? state.currentUser.email : (state.language === 'en' ? "Admin" : "مدير");
         
         renderAdminDashboard();
+    } else if (viewName === "track-order") {
+        DOM.trackOrderView.classList.remove("hidden");
+        void DOM.trackOrderView.offsetWidth;
+        DOM.trackOrderView.classList.add("active");
+        
+        DOM.userBadge.classList.remove("hidden");
+        DOM.logoutBtn.classList.remove("hidden");
+        DOM.cartToggle.classList.add("hidden");
+        DOM.trackOrderBtn.classList.add("hidden");
+        DOM.langToggle.classList.add("hidden"); // Hide language toggle
+        
+        renderTrackOrder();
     }
     
     // Scroll to top
@@ -298,7 +398,7 @@ function handleLogin(email, password) {
     }
 }
 
-function handleSignup(email, password, role) {
+function handleSignup(email, password, role, mobile, address, dob) {
     const users = JSON.parse(localStorage.getItem("om_shaltet_users")) || [];
     
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
@@ -306,7 +406,7 @@ function handleSignup(email, password, role) {
         return;
     }
     
-    const newUser = { email, password, role };
+    const newUser = { email, password, role, mobile, address, dob };
     users.push(newUser);
     localStorage.setItem("om_shaltet_users", JSON.stringify(users));
     
@@ -335,8 +435,8 @@ function renderCustomerMenu() {
     if (state.customerSearch.trim() !== "") {
         const query = state.customerSearch.toLowerCase();
         filtered = filtered.filter(item => 
-            item.name.toLowerCase().includes(query) || 
-            item.description.toLowerCase().includes(query)
+            (item.name[state.language] || "").toLowerCase().includes(query) || 
+            (item.description[state.language] || "").toLowerCase().includes(query)
         );
     }
 
@@ -351,7 +451,7 @@ function renderCustomerMenu() {
     } else if (state.customerSort === "price-high") {
         filtered.sort((a, b) => b.price - a.price);
     } else if (state.customerSort === "name-asc") {
-        filtered.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+        filtered.sort((a, b) => (a.name[state.language] || "").localeCompare(b.name[state.language] || "", state.language));
     }
 
     // Render Items
@@ -373,20 +473,20 @@ function renderCustomerMenu() {
             
             card.innerHTML = `
                 <div class="food-card-img-wrapper">
-                    <img src="${item.image}" alt="${item.name}" class="food-card-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+                    <img src="${item.image}" alt="${item.name[state.language]}" class="food-card-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
                     <span class="category-tag">${catArabic}</span>
                     ${badgeHTML}
                 </div>
                 <div class="food-card-info">
                     <div class="food-card-title-row">
-                        <h3 class="food-card-title">${item.name}</h3>
+                        <h3 class="food-card-title">${item.name[state.language]}</h3>
                         <span class="food-card-price">${item.price} ج.م</span>
                     </div>
-                    <p class="food-card-desc">${item.description}</p>
+                    <p class="food-card-desc">${item.description[state.language]}</p>
                     <div class="food-card-actions">
                         <button class="btn btn-primary btn-block btn-animate add-to-cart-btn" data-id="${item.id}" ${isOutOfStock ? 'disabled' : ''}>
                             <i class="fa-solid fa-cart-plus"></i>
-                            <span>${isOutOfStock ? 'غير متوفر حالياً' : 'أضف إلى السلة'}</span>
+                            <span>${isOutOfStock ? (state.language === 'en' ? 'Out of Stock' : 'غير متوفر حالياً') : (state.language === 'en' ? 'Add to Cart' : 'أضف إلى السلة')}</span>
                         </button>
                     </div>
                 </div>
@@ -406,8 +506,8 @@ function renderAdminDashboard() {
     if (state.adminSearch.trim() !== "") {
         const query = state.adminSearch.toLowerCase();
         filtered = filtered.filter(item => 
-            item.name.toLowerCase().includes(query) || 
-            item.description.toLowerCase().includes(query)
+            (item.name[state.language] || "").toLowerCase().includes(query) || 
+            (item.description[state.language] || "").toLowerCase().includes(query)
         );
     }
 
@@ -421,9 +521,21 @@ function renderAdminDashboard() {
     const outOfStock = state.menuItems.filter(item => item.status === "out-of-stock").length;
     const categoriesSet = new Set(state.menuItems.map(item => item.category));
     
+    // Revenue calculation
+    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+    let revenue = 0;
+    orders.forEach(order => {
+        if (order.status === 'completed') {
+            order.items.forEach(entry => {
+                revenue += (entry.item.price * entry.quantity);
+            });
+        }
+    });
+    
     DOM.statTotalItems.textContent = totalItems;
     DOM.statOutOfStock.textContent = outOfStock;
     DOM.statCategories.textContent = categoriesSet.size;
+    if (DOM.statRevenue) DOM.statRevenue.textContent = revenue.toFixed(2) + " ج.م";
 
     // Render Admin Grid
     DOM.adminMenuGrid.innerHTML = "";
@@ -444,16 +556,16 @@ function renderAdminDashboard() {
             
             card.innerHTML = `
                 <div class="food-card-img-wrapper">
-                    <img src="${item.image}" alt="${item.name}" class="food-card-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+                    <img src="${item.image}" alt="${item.name[state.language]}" class="food-card-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
                     <span class="category-tag">${catArabic}</span>
                     ${badgeHTML}
                 </div>
                 <div class="food-card-info">
                     <div class="food-card-title-row">
-                        <h3 class="food-card-title">${item.name}</h3>
+                        <h3 class="food-card-title">${item.name[state.language]}</h3>
                         <span class="food-card-price">${item.price} ج.م</span>
                     </div>
-                    <p class="food-card-desc">${item.description}</p>
+                    <p class="food-card-desc">${item.description[state.language]}</p>
                     <div class="admin-grid-actions">
                         <button class="btn btn-secondary edit-item-btn" data-id="${item.id}">
                             <i class="fa-solid fa-pen-to-square"></i>
@@ -486,11 +598,11 @@ function openItemModal(itemId = null) {
         
         DOM.modalTitle.textContent = "تعديل الوجبة";
         DOM.modalItemId.value = item.id;
-        DOM.modalItemName.value = item.name;
+        DOM.modalItemName.value = item.name.ar || item.name; // Use AR temporarily for edit
         DOM.modalItemPrice.value = item.price;
         DOM.modalItemCategory.value = item.category;
         DOM.modalItemStatus.value = item.status;
-        DOM.modalItemDesc.value = item.description;
+        DOM.modalItemDesc.value = item.description.ar || item.description;
         
         // Setup image dropdown selection
         const matchingOption = Array.from(DOM.modalItemImageSelect.options).find(opt => opt.value === item.image);
@@ -516,16 +628,20 @@ function handleSaveItem(e) {
     e.preventDefault();
     
     const id = DOM.modalItemId.value;
-    const name = DOM.modalItemName.value.trim();
+    const nameText = DOM.modalItemName.value.trim();
     const price = parseFloat(DOM.modalItemPrice.value);
     const category = DOM.modalItemCategory.value;
     const status = DOM.modalItemStatus.value;
-    const description = DOM.modalItemDesc.value.trim();
+    const descriptionText = DOM.modalItemDesc.value.trim();
     
     let image = DOM.modalItemImageSelect.value;
     if (image === "custom") {
         image = DOM.modalItemImageCustom.value.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80";
     }
+    
+    // Convert back to bilingual object
+    const name = { ar: nameText, en: nameText };
+    const description = { ar: descriptionText, en: descriptionText };
     
     if (id) {
         // Update existing item
@@ -656,9 +772,32 @@ function updateCartUI() {
 function handleCheckout() {
     if (state.cart.length === 0) return;
     
+    const isDelivery = document.querySelector('input[name="delivery-type"][value="delivery"]').checked;
+    const location = isDelivery ? document.getElementById("cart-delivery-address").value.trim() : document.getElementById("cart-pickup-branch").value;
+    
+    if (isDelivery && !location) {
+        showToast("برجاء إدخال عنوان التوصيل!", "error");
+        return;
+    }
+    
     // Show success modal
     const randomOrderId = "#" + Math.floor(1000 + Math.random() * 9000);
     DOM.orderIdNum.textContent = randomOrderId;
+    
+    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+    const newOrder = {
+        id: randomOrderId,
+        type: isDelivery ? 'delivery' : 'pickup',
+        location: location,
+        items: [...state.cart],
+        status: 'preparing',
+        timestamp: new Date().toISOString(),
+        customer: state.currentUser ? state.currentUser.email : 'زائر'
+    };
+    orders.push(newOrder);
+    localStorage.setItem("om_shaltet_orders", JSON.stringify(orders));
+    
+    state.activeOrder = newOrder;
     
     toggleCartDrawer(false);
     DOM.successModal.classList.add("open");
@@ -667,6 +806,155 @@ function handleCheckout() {
     state.cart = [];
     updateCartUI();
 }
+
+/* ==========================================================================
+   TRACK ORDER & ADMIN ORDERS
+   ========================================================================== */
+function renderTrackOrder() {
+    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+    if (!state.activeOrder && state.currentUser) {
+        const userOrders = orders.filter(o => o.customer === state.currentUser.email);
+        if (userOrders.length > 0) {
+            state.activeOrder = userOrders[userOrders.length - 1];
+        }
+    }
+    
+    if (!state.activeOrder) {
+        document.getElementById("active-order-tracking").classList.add("hidden");
+        document.getElementById("no-active-order").classList.remove("hidden");
+        return;
+    }
+    
+    const upToDateOrder = orders.find(o => o.id === state.activeOrder.id);
+    if(upToDateOrder) state.activeOrder = upToDateOrder;
+
+    document.getElementById("active-order-tracking").classList.remove("hidden");
+    document.getElementById("no-active-order").classList.add("hidden");
+    
+    document.getElementById("track-order-number").textContent = state.activeOrder.id;
+    document.getElementById("track-order-type").textContent = state.activeOrder.type === 'delivery' ? (state.language === 'en' ? 'Delivery' : 'توصيل') : (state.language === 'en' ? 'Branch Pickup' : 'استلام من الفرع');
+    document.getElementById("track-order-time").textContent = new Date(state.activeOrder.timestamp).toLocaleTimeString();
+    document.getElementById("track-location-text").textContent = state.activeOrder.location;
+    
+    const stepPrep = document.getElementById("step-preparing");
+    const stepTransit = document.getElementById("step-transit");
+    const stepCompleted = document.getElementById("step-completed");
+    const fill = document.getElementById("track-progress-fill");
+    
+    stepPrep.classList.remove("active");
+    stepTransit.classList.remove("active");
+    stepCompleted.classList.remove("active");
+    
+    if (state.activeOrder.status === 'preparing') {
+        stepPrep.classList.add("active");
+        fill.style.width = '33%';
+        document.getElementById("track-countdown").textContent = "20:00";
+    } else if (state.activeOrder.status === 'ready') {
+        stepPrep.classList.add("active");
+        stepTransit.classList.add("active");
+        fill.style.width = '66%';
+        document.getElementById("track-countdown").textContent = "10:00";
+    } else {
+        stepPrep.classList.add("active");
+        stepTransit.classList.add("active");
+        stepCompleted.classList.add("active");
+        fill.style.width = '100%';
+        document.getElementById("track-countdown").textContent = "00:00";
+    }
+    
+    const list = document.getElementById("track-items-list");
+    list.innerHTML = "";
+    let total = 0;
+    state.activeOrder.items.forEach(entry => {
+        total += entry.item.price * entry.quantity;
+        const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
+        list.innerHTML += `<div>${entry.quantity}x ${itemName} - ${entry.item.price} ج.م</div>`;
+    });
+    document.getElementById("track-total-price").textContent = total.toFixed(2) + " ج.م";
+}
+
+function renderAdminOrders() {
+    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+    let filteredOrders = [...orders].reverse();
+    
+    if (state.adminOrdersFilter !== "all") {
+        filteredOrders = filteredOrders.filter(o => o.status === state.adminOrdersFilter);
+    }
+    
+    if (state.adminOrdersSearch.trim() !== "") {
+        const query = state.adminOrdersSearch.toLowerCase();
+        filteredOrders = filteredOrders.filter(o => 
+            o.id.toLowerCase().includes(query) || 
+            o.customer.toLowerCase().includes(query)
+        );
+    }
+    
+    const pendingOrdersCount = orders.filter(o => o.status !== 'completed').length;
+    const badge = document.getElementById("admin-orders-badge");
+    if (pendingOrdersCount > 0) {
+        badge.textContent = pendingOrdersCount;
+        badge.classList.remove("hidden");
+    } else {
+        badge.classList.add("hidden");
+    }
+    
+    const grid = document.getElementById("admin-orders-list-grid");
+    const noResults = document.getElementById("admin-orders-no-results");
+    
+    grid.innerHTML = "";
+    if (filteredOrders.length === 0) {
+        noResults.classList.remove("hidden");
+    } else {
+        noResults.classList.add("hidden");
+        filteredOrders.forEach(order => {
+            const card = document.createElement("div");
+            card.className = "food-card fade-in";
+            card.style.display = "flex";
+            card.style.flexDirection = "column";
+            card.style.padding = "16px";
+            card.style.gap = "12px";
+            
+            const total = order.items.reduce((sum, entry) => sum + (entry.item.price * entry.quantity), 0);
+            
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-border); padding-bottom: 8px;">
+                    <h3 style="margin: 0;">${order.id}</h3>
+                    <span class="status-badge" style="background-color: ${order.status === 'completed' ? 'var(--success-color)' : 'var(--primary-color)'}; color: white;">${order.status}</span>
+                </div>
+                <div style="font-size: 0.9rem;">
+                    <strong>${state.language === 'en' ? 'Customer:' : 'الزبون:'}</strong> ${order.customer}<br>
+                    <strong>${state.language === 'en' ? 'Type:' : 'النوع:'}</strong> ${order.type === 'delivery' ? 'توصيل' : 'استلام'}<br>
+                    <strong>${state.language === 'en' ? 'Location:' : 'العنوان:'}</strong> ${order.location}
+                </div>
+                <div style="font-size: 0.85rem; max-height: 80px; overflow-y: auto;">
+                    ${order.items.map(entry => {
+                        const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
+                        return `${entry.quantity}x ${itemName}`;
+                    }).join('<br>')}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin-top: auto;">
+                    <span>${total.toFixed(2)} ج.م</span>
+                    <select class="admin-order-status-select" data-id="${order.id}" style="padding: 4px; border-radius: 4px; border: 1px solid var(--primary-border);">
+                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${state.language === 'en' ? 'Preparing' : 'قيد التحضير'}</option>
+                        <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${state.language === 'en' ? 'Ready' : 'جاهز'}</option>
+                        <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>${state.language === 'en' ? 'Completed' : 'تم التسليم'}</option>
+                    </select>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+}
+
+// Auto-refresh tracker/orders if they are visible
+setInterval(() => {
+    if (DOM.trackOrderView && DOM.trackOrderView.classList.contains("active")) {
+        renderTrackOrder();
+    }
+    if (DOM.adminView && DOM.adminView.classList.contains("active") && state.adminSubView === 'orders') {
+        renderAdminOrders();
+    }
+}, 5000);
 
 /* ==========================================================================
    THEME TOGGLER (LIGHT / DARK MODES)
@@ -696,6 +984,42 @@ function toggleTheme() {
         setTheme("dark-mode");
     } else {
         setTheme("light-mode");
+    }
+}
+
+/* ==========================================================================
+   LANGUAGE TOGGLER
+   ========================================================================== */
+function initLanguage() {
+    const savedLang = localStorage.getItem("om_shaltet_lang") || "ar";
+    setLanguage(savedLang);
+}
+
+function setLanguage(lang) {
+    state.language = lang;
+    localStorage.setItem("om_shaltet_lang", lang);
+    
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    
+    if (lang === 'en') {
+        DOM.langText.textContent = 'AR';
+        document.title = "Om Shaltet - Authentic Rural Food";
+    } else {
+        DOM.langText.textContent = 'EN';
+        document.title = "مطعم عم شلتت - الفطير والأكل الفلاحي الأصيل";
+    }
+    
+    if (DOM.customerView.classList.contains("active")) renderCustomerMenu();
+    if (DOM.adminView.classList.contains("active")) renderAdminDashboard();
+    updateCartUI();
+}
+
+function toggleLanguage() {
+    if (state.language === 'ar') {
+        setLanguage('en');
+    } else {
+        setLanguage('ar');
     }
 }
 
@@ -733,6 +1057,9 @@ function translateCategory(category) {
 function setupEventListeners() {
     // Theme Toggle
     DOM.themeToggle.addEventListener("click", toggleTheme);
+    
+    // Language Toggle
+    DOM.langToggle.addEventListener("click", toggleLanguage);
     
     // Auth Tab Switching
     DOM.tabLogin.addEventListener("click", () => {
@@ -773,6 +1100,9 @@ function setupEventListeners() {
         const password = document.getElementById("signup-password").value;
         const confirmPass = document.getElementById("signup-confirm-password").value;
         const isAdmin = document.getElementById("signup-admin-role").checked;
+        const mobile = document.getElementById("signup-mobile").value.trim();
+        const address = document.getElementById("signup-address").value.trim();
+        const dob = document.getElementById("signup-dob").value;
         
         if (password !== confirmPass) {
             showToast("كلمتا المرور غير متطابقتين!", "error");
@@ -780,7 +1110,7 @@ function setupEventListeners() {
         }
         
         const role = isAdmin ? "admin" : "user";
-        handleSignup(email, password, role);
+        handleSignup(email, password, role, mobile, address, dob);
     });
     
     // Logout
@@ -890,10 +1220,100 @@ function setupEventListeners() {
     // Success Modal Close
     DOM.successModalClose.addEventListener("click", () => {
         DOM.successModal.classList.remove("open");
+        navigateTo("track-order");
     });
     document.querySelector("#success-modal .modal-overlay").addEventListener("click", () => {
         DOM.successModal.classList.remove("open");
+        navigateTo("track-order");
     });
+    
+    // Delivery Type switch
+    const homeBtn = document.getElementById("delivery-type-home");
+    const branchBtn = document.getElementById("delivery-type-branch");
+    if (homeBtn && branchBtn) {
+        homeBtn.addEventListener("click", () => {
+            document.getElementById("delivery-address-group").classList.remove("hidden");
+            document.getElementById("delivery-branch-group").classList.add("hidden");
+            homeBtn.classList.add("active");
+            branchBtn.classList.remove("active");
+            homeBtn.querySelector('input').checked = true;
+        });
+        branchBtn.addEventListener("click", () => {
+            document.getElementById("delivery-address-group").classList.add("hidden");
+            document.getElementById("delivery-branch-group").classList.remove("hidden");
+            homeBtn.classList.remove("active");
+            branchBtn.classList.add("active");
+            branchBtn.querySelector('input').checked = true;
+        });
+    }
+    
+    if (DOM.trackOrderBtn) DOM.trackOrderBtn.addEventListener("click", () => navigateTo("track-order"));
+    const goBackBtn = document.getElementById("go-back-to-menu-btn");
+    if (goBackBtn) goBackBtn.addEventListener("click", () => navigateTo("customer"));
+    
+    // Admin Subviews Tabs
+    const tabMenu = document.getElementById("admin-tab-menu");
+    const tabOrders = document.getElementById("admin-tab-orders");
+    const mgrMenu = document.getElementById("admin-menu-manager");
+    const mgrOrders = document.getElementById("admin-orders-manager");
+    
+    if (tabMenu && tabOrders) {
+        tabMenu.addEventListener("click", () => {
+            tabMenu.classList.add("active");
+            tabOrders.classList.remove("active");
+            mgrMenu.classList.remove("hidden");
+            mgrOrders.classList.add("hidden");
+            state.adminSubView = 'menu';
+        });
+        tabOrders.addEventListener("click", () => {
+            tabOrders.classList.add("active");
+            tabMenu.classList.remove("active");
+            mgrOrders.classList.remove("hidden");
+            mgrMenu.classList.add("hidden");
+            state.adminSubView = 'orders';
+            renderAdminOrders();
+        });
+    }
+    
+    // Admin Orders filters & search
+    const adminOrdersSearch = document.getElementById("admin-orders-search-input");
+    if (adminOrdersSearch) {
+        adminOrdersSearch.addEventListener("input", (e) => {
+            state.adminOrdersSearch = e.target.value;
+            renderAdminOrders();
+        });
+    }
+    
+    const adminOrdersFilters = document.getElementById("admin-orders-filters");
+    if (adminOrdersFilters) {
+        adminOrdersFilters.addEventListener("click", (e) => {
+            if (e.target.classList.contains("filter-btn")) {
+                adminOrdersFilters.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+                e.target.classList.add("active");
+                state.adminOrdersFilter = e.target.getAttribute("data-order-status");
+                renderAdminOrders();
+            }
+        });
+    }
+    
+    // Admin Order Status Update
+    const adminOrdersGrid = document.getElementById("admin-orders-list-grid");
+    if (adminOrdersGrid) {
+        adminOrdersGrid.addEventListener("change", (e) => {
+            if (e.target.classList.contains("admin-order-status-select")) {
+                const id = e.target.getAttribute("data-id");
+                const status = e.target.value;
+                const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+                const order = orders.find(o => o.id === id);
+                if (order) {
+                    order.status = status;
+                    localStorage.setItem("om_shaltet_orders", JSON.stringify(orders));
+                    showToast("تم تحديث حالة الطلب!", "success");
+                    renderAdminOrders();
+                }
+            }
+        });
+    }
 }
 
 /* ==========================================================================
@@ -902,6 +1322,7 @@ function setupEventListeners() {
 document.addEventListener("DOMContentLoaded", () => {
     initDatabase();
     initTheme();
+    initLanguage();
     setupEventListeners();
     checkSession();
 });

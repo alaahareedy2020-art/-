@@ -35,15 +35,28 @@
             
             <!-- Navbar Actions -->
             <div class="nav-actions">
+                <!-- Language Toggle -->
+                <button id="lang-toggle" class="nav-btn" title="Change Language / تغيير اللغة">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="lang-text" style="font-weight: 600; font-size: 0.85rem; margin-right: 4px; display: inline-block;">EN</span>
+                </button>
+
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" class="nav-btn" title="تغيير المظهر">
                     <i class="fa-solid fa-moon"></i>
                 </button>
 
+                <!-- Track My Order (Customer only) -->
+                <button id="track-order-btn" class="nav-btn nav-btn-wide hidden" title="تتبع الطلب">
+                    <i class="fa-solid fa-route"></i>
+                    <span class="nav-btn-text" style="margin-right: 4px; font-weight: 600; font-size: 0.85rem;">تتبع طلبي</span>
+                </button>
+
                 <!-- Cart Button (Customer only) -->
-                <button id="cart-toggle" class="nav-btn cart-btn hidden">
+                <button id="cart-toggle" class="nav-btn nav-btn-wide cart-btn hidden">
                     <i class="fa-solid fa-shopping-basket"></i>
                     <span id="cart-badge" class="badge">0</span>
+                    <span class="nav-btn-text" style="margin-right: 4px; font-weight: 600; font-size: 0.85rem;">السلة</span>
                 </button>
 
                 <!-- User Profile / Admin Mode Badge -->
@@ -123,6 +136,24 @@
                         <input type="password" id="signup-confirm-password" required placeholder="••••••••">
                     </div>
 
+                    <!-- Mobile Number -->
+                    <div class="form-group">
+                        <label for="signup-mobile" id="lbl-signup-mobile"><i class="fa-solid fa-phone"></i> رقم الهاتف المحمول</label>
+                        <input type="tel" id="signup-mobile" required placeholder="مثال: 01012345678">
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group">
+                        <label for="signup-address" id="lbl-signup-address"><i class="fa-solid fa-location-dot"></i> العنوان بالتفصيل</label>
+                        <input type="text" id="signup-address" required placeholder="مثال: 12 شارع التسعين، التجمع الخامس">
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="form-group">
+                        <label for="signup-dob" id="lbl-signup-dob"><i class="fa-solid fa-calendar-days"></i> تاريخ الميلاد</label>
+                        <input type="date" id="signup-dob" required>
+                    </div>
+
                     <!-- Role Select Button/Checkbox -->
                     <div class="form-group">
                         <label class="checkbox-container admin-checkbox">
@@ -196,69 +227,203 @@
 
         <!-- ================= ADMIN DASHBOARD VIEW ================= -->
         <section id="admin-view" class="view-section hidden">
-            <div class="admin-header-row">
-                <div class="admin-title">
-                    <h2><i class="fa-solid fa-gauge-high"></i> لوحة تحكم الإدارة</h2>
-                    <p>إدارة الوجبات والأسعار والتصنيفات وتوافر المخزون</p>
-                </div>
-                <button id="admin-add-item-btn" class="btn btn-primary btn-animate">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>إضافة وجبة جديدة</span>
-                </button>
+            <!-- Admin Top Tab Bar -->
+            <div class="admin-tabs" style="display: flex; gap: 16px; margin-bottom: 24px; border-bottom: 2px solid var(--primary-border); padding-bottom: 12px;">
+                <button id="admin-tab-menu" class="filter-btn active" style="font-size: 1.1rem; padding: 10px 20px;"><i class="fa-solid fa-utensils"></i> <span id="txt-admin-tab-menu">إدارة المنيو</span></button>
+                <button id="admin-tab-orders" class="filter-btn" style="font-size: 1.1rem; padding: 10px 20px; position: relative;"><i class="fa-solid fa-receipt"></i> <span id="txt-admin-tab-orders">الطلبات الواردة</span> <span id="admin-orders-badge" class="badge hidden" style="position: absolute; top: -5px; right: -5px; background-color: var(--danger-color); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem;">0</span></button>
             </div>
 
-            <!-- Admin Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-utensils"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">إجمالي الوجبات</span>
-                        <span id="stat-total-items" class="stat-val">0</span>
+            <!-- ADMIN MENU MANAGEMENT SUB-VIEW -->
+            <div id="admin-menu-manager" class="admin-subview">
+                <div class="admin-header-row">
+                    <div class="admin-title">
+                        <h2 id="txt-admin-title"><i class="fa-solid fa-gauge-high"></i> لوحة تحكم الإدارة</h2>
+                        <p id="txt-admin-subtitle">إدارة الوجبات والأسعار والتصنيفات وتوافر المخزون</p>
+                    </div>
+                    <button id="admin-add-item-btn" class="btn btn-primary btn-animate">
+                        <i class="fa-solid fa-plus"></i>
+                        <span id="txt-admin-add-item">إضافة وجبة جديدة</span>
+                    </button>
+                </div>
+
+                <!-- Admin Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label" id="lbl-admin-stat-total">إجمالي الوجبات</span>
+                            <span id="stat-total-items" class="stat-val">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-list"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label" id="lbl-admin-stat-categories">التصنيفات النشطة</span>
+                            <span id="stat-categories" class="stat-val">5</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label" id="lbl-admin-stat-out">غير متوفر بالمخزن</span>
+                            <span id="stat-out-of-stock" class="stat-val">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--success-color); background-color: rgba(93, 140, 101, 0.1);"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label" id="lbl-admin-stat-revenue">الإيرادات</span>
+                            <span id="stat-revenue" class="stat-val">0 ج.م</span>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-list"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">التصنيفات النشطة</span>
-                        <span id="stat-categories" class="stat-val">5</span>
+
+                <!-- Dashboard Controls -->
+                <div class="controls-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="admin-search-input" placeholder="ابحث في قائمة الإدارة...">
+                    </div>
+                    
+                    <div class="category-filters-container">
+                        <div id="admin-category-filters" class="category-filters">
+                            <button class="filter-btn active" data-category="all">الكل</button>
+                            <button class="filter-btn" data-category="Sandwiches">سندوتشات</button>
+                            <button class="filter-btn" data-category="Meals">وجبات</button>
+                            <button class="filter-btn" data-category="Drinks">مشروبات</button>
+                            <button class="filter-btn" data-category="Desserts">حلويات</button>
+                            <button class="filter-btn" data-category="Extras">إضافات</button>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">غير متوفر بالمخزن</span>
-                        <span id="stat-out-of-stock" class="stat-val">0</span>
+
+                <!-- Admin Grid List -->
+                <div class="menu-grid-container">
+                    <div id="admin-menu-grid" class="food-grid admin-grid">
+                        <!-- Dynamic Admin Items Inject here -->
+                    </div>
+                    <div id="admin-no-results" class="no-results hidden">
+                        <i class="fa-regular fa-face-frown"></i>
+                        <h3 id="txt-admin-no-results">لا توجد وجبات لعرضها!</h3>
                     </div>
                 </div>
             </div>
 
-            <!-- Dashboard Controls -->
-            <div class="controls-panel">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="admin-search-input" placeholder="ابحث في قائمة الإدارة...">
-                </div>
-                
-                <div class="category-filters-container">
-                    <div id="admin-category-filters" class="category-filters">
-                        <button class="filter-btn active" data-category="all">الكل</button>
-                        <button class="filter-btn" data-category="Sandwiches">سندوتشات</button>
-                        <button class="filter-btn" data-category="Meals">وجبات</button>
-                        <button class="filter-btn" data-category="Drinks">مشروبات</button>
-                        <button class="filter-btn" data-category="Desserts">حلويات</button>
-                        <button class="filter-btn" data-category="Extras">إضافات</button>
+            <!-- ADMIN ORDERS DASHBOARD SUB-VIEW -->
+            <div id="admin-orders-manager" class="admin-subview hidden">
+                <div class="admin-header-row">
+                    <div class="admin-title">
+                        <h2 id="txt-admin-orders-title"><i class="fa-solid fa-receipt"></i> لوحة الطلبات الواردة</h2>
+                        <p id="txt-admin-orders-subtitle">متابعة طلبات الزبائن وتغيير حالات التوصيل والاستلام فورياً</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Admin Grid List -->
-            <div class="menu-grid-container">
-                <div id="admin-menu-grid" class="food-grid admin-grid">
-                    <!-- Dynamic Admin Items Inject here -->
+                <!-- Orders Filter and controls -->
+                <div class="controls-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="admin-orders-search-input" placeholder="ابحث برقم الطلب أو البريد الإلكتروني...">
+                    </div>
+                    
+                    <div class="category-filters-container">
+                        <div id="admin-orders-filters" class="category-filters">
+                            <button class="filter-btn active" data-order-status="all">الكل</button>
+                            <button class="filter-btn" data-order-status="preparing">قيد التحضير</button>
+                            <button class="filter-btn" data-order-status="ready">جاهز للاستلام/التوصيل</button>
+                            <button class="filter-btn" data-order-status="completed">تم التسليم</button>
+                        </div>
+                    </div>
                 </div>
-                <div id="admin-no-results" class="no-results hidden">
-                    <i class="fa-regular fa-face-frown"></i>
-                    <h3>لا توجد وجبات لعرضها!</h3>
+
+                <!-- Incoming Orders Container -->
+                <div class="admin-orders-container" id="admin-orders-list-grid">
+                    <!-- Dynamic orders will be injected here as cards -->
+                </div>
+                <div id="admin-orders-no-results" class="no-results hidden">
+                    <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+                    <h3 id="txt-admin-orders-no-results">لا توجد طلبات لعرضها حالياً!</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TRACK ORDER VIEW ================= -->
+        <section id="track-order-view" class="view-section hidden">
+            <div class="tracking-card">
+                <div class="tracking-header">
+                    <h2 id="txt-tracking-title"><i class="fa-solid fa-route"></i> تتبع طلبك</h2>
+                    <p id="txt-tracking-subtitle">تابع حالة تحضير وتوصيل وجبتك الساخنة من عم شلتت</p>
+                </div>
+
+                <!-- Active Order Display -->
+                <div id="active-order-tracking" class="tracking-body">
+                    <div class="tracking-info-grid">
+                        <div class="tracking-stat">
+                            <span class="label" id="lbl-track-order-number">رقم الطلب:</span>
+                            <span id="track-order-number" class="value">-</span>
+                        </div>
+                        <div class="tracking-stat">
+                            <span class="label" id="lbl-track-order-type">طريقة الاستلام:</span>
+                            <span id="track-order-type" class="value">-</span>
+                        </div>
+                        <div class="tracking-stat">
+                            <span class="label" id="lbl-track-order-time">تاريخ الطلب:</span>
+                            <span id="track-order-time" class="value">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Countdown Timer -->
+                    <div class="countdown-container">
+                        <div class="countdown-title" id="lbl-track-countdown-title">الوقت المتبقي المقدر</div>
+                        <div id="track-countdown" class="countdown-timer">20:00</div>
+                        <div class="countdown-sub" id="lbl-track-countdown-sub">نعمل جاهداً لتسليم طلبك ساخناً!</div>
+                    </div>
+
+                    <!-- Progress Bar Steps -->
+                    <div class="order-progress-wrapper">
+                        <div class="progress-bar-line">
+                            <div id="track-progress-fill" class="progress-line-fill" style="width: 33%"></div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step active" id="step-preparing">
+                                <div class="step-icon"><i class="fa-solid fa-fire-burner"></i></div>
+                                <span class="step-label" id="lbl-step-preparing">قيد التحضير</span>
+                            </div>
+                            <div class="progress-step" id="step-transit">
+                                <div class="step-icon" id="step-transit-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                                <span class="step-label" id="lbl-step-transit">جاري التوصيل</span>
+                            </div>
+                            <div class="progress-step" id="step-completed">
+                                <div class="step-icon"><i class="fa-solid fa-circle-check"></i></div>
+                                <span class="step-label" id="lbl-step-completed">تم التسليم</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Details -->
+                    <div class="location-details-box">
+                        <h4 id="track-location-title"><i class="fa-solid fa-map-location-dot"></i> عنوان التوصيل:</h4>
+                        <p id="track-location-text" class="location-text">-</p>
+                    </div>
+
+                    <!-- Items Summary -->
+                    <div class="order-summary-box">
+                        <h4 id="lbl-track-order-details">تفاصيل الطلب:</h4>
+                        <div id="track-items-list" class="track-items-summary">
+                            <!-- JS Inject items -->
+                        </div>
+                        <div class="track-total-row">
+                            <span id="lbl-track-total-paid">الإجمالي المدفوع:</span>
+                            <span id="track-total-price">0.00 ج.م</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Active Order Display -->
+                <div id="no-active-order" class="no-results text-center">
+                    <i class="fa-solid fa-clipboard-question" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <h3 id="txt-no-active-order-title">لا يوجد طلب نشط حالياً!</h3>
+                    <p id="txt-no-active-order-desc">قم بالذهاب للقائمة واطلب أشهى الوجبات لتتمكن من تتبعها هنا.</p>
+                    <button id="go-back-to-menu-btn" class="btn btn-primary btn-animate" style="margin-top: 16px;">الذهاب للقائمة</button>
                 </div>
             </div>
         </section>
@@ -278,6 +443,36 @@
             </div>
             
             <div class="cart-footer">
+                <!-- Delivery Mode Options -->
+                <div class="delivery-options-container">
+                    <label class="delivery-options-title" id="lbl-delivery-options-title"><i class="fa-solid fa-truck"></i> طريقة الاستلام:</label>
+                    <div class="delivery-toggle-group">
+                        <label class="delivery-toggle-btn active" id="delivery-type-home">
+                            <input type="radio" name="delivery-type" value="delivery" checked hidden>
+                            <span id="txt-delivery-home">توصيل للمنزل</span>
+                        </label>
+                        <label class="delivery-toggle-btn" id="delivery-type-branch">
+                            <input type="radio" name="delivery-type" value="pickup" hidden>
+                            <span id="txt-delivery-branch">استلام من الفرع</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Conditional Address/Branch selection -->
+                <div id="delivery-address-group" class="cart-delivery-group">
+                    <label for="cart-delivery-address" id="lbl-delivery-address"><i class="fa-solid fa-map-marker-alt"></i> عنوان التوصيل الحالي:</label>
+                    <input type="text" id="cart-delivery-address" placeholder="أدخل عنوان التوصيل بالتفصيل">
+                </div>
+
+                <div id="delivery-branch-group" class="cart-delivery-group hidden">
+                    <label for="cart-pickup-branch" id="lbl-pickup-branch"><i class="fa-solid fa-store"></i> اختر الفرع للاستلام:</label>
+                    <select id="cart-pickup-branch">
+                        <option value="فرع التجمع الخامس - شارع التسعين" id="opt-branch-1">فرع التجمع الخامس - شارع التسعين</option>
+                        <option value="فرع وسط البلد - شارع طلعت حرب" id="opt-branch-2">فرع وسط البلد - شارع طلعت حرب</option>
+                        <option value="فرع مدينة نصر - عباس العقاد" id="opt-branch-3">فرع مدينة نصر - عباس العقاد</option>
+                    </select>
+                </div>
+
                 <div class="cart-summary-row">
                     <span>المجموع الفرعي:</span>
                     <span id="cart-subtotal">0.00 ج.م</span>
