@@ -1,6 +1,10 @@
 /* ==========================================================================
    APP STATE & INITIALIZATION
    ========================================================================== */
+const SUPABASE_URL = 'https://pioeppwgetbxgiuzcfjs.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_LZ48twcMeVYZ94wil5JGjg_12gkvl9U';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const DEFAULT_MENU_ITEMS = [
     {
         id: "item_1",
@@ -157,37 +161,63 @@ let state = {
     adminOrdersSearch: ""
 };
 
-// Seed LocalStorage
-function initDatabase() {
+// Seed & Init Database
+async function initDatabase() {
     // Database migration/upgrade to support bilingual keys and new assets
     const dbVer = localStorage.getItem("om_shaltet_db_ver");
-    if (dbVer !== "4.0") {
+    if (dbVer !== "5.0") {
         localStorage.removeItem("om_shaltet_menu");
-        localStorage.setItem("om_shaltet_db_ver", "4.0");
+        localStorage.setItem("om_shaltet_db_ver", "5.0");
     }
 
-    // Menu database
-    if (!localStorage.getItem("om_shaltet_menu")) {
-        localStorage.setItem("om_shaltet_menu", JSON.stringify(DEFAULT_MENU_ITEMS));
-    }
-    state.menuItems = JSON.parse(localStorage.getItem("om_shaltet_menu"));
+    try {
+        // Fetch Menu from Supabase
+        const { data: menuData, error: menuError } = await supabase.from('menu_items').select('*');
+        if (menuError) throw menuError;
 
-    // Users seed (default admin and user accounts with phone, address, dob)
-    if (!localStorage.getItem("om_shaltet_users")) {
-        const initialUsers = [
-            { email: "admin@test.com", password: "123", role: "admin", mobile: "01012345678", address: "المكتب الرئيسي - وسط البلد", dob: "1990-01-01" },
-            { email: "user@test.com", password: "123", role: "user", mobile: "01234567890", address: "12 شارع التسعين، التجمع الخامس", dob: "1995-05-05" }
-        ];
-        localStorage.setItem("om_shaltet_users", JSON.stringify(initialUsers));
+        if (menuData && menuData.length > 0) {
+            // Parse JSON fields (if any) or map them back to state format
+            state.menuItems = menuData.map(item => ({
+                id: item.id,
+                name: { ar: item.name_ar, en: item.name_en },
+                description: { ar: item.desc_ar, en: item.desc_en },
+                price: parseFloat(item.price),
+                oldPrice: item.old_price ? parseFloat(item.old_price) : undefined,
+                isOffer: item.is_offer,
+                category: item.category,
+                image: item.image,
+                status: item.status
+            }));
+        } else {
+            // If Supabase is empty, insert default menu items
+            const defaultRows = DEFAULT_MENU_ITEMS.map(item => ({
+                id: item.id,
+                name_ar: item.name.ar,
+                name_en: item.name.en,
+                desc_ar: item.description.ar,
+                desc_en: item.description.en,
+                price: item.price,
+                old_price: item.oldPrice || null,
+                is_offer: item.isOffer || false,
+                category: item.category,
+                image: item.image,
+                status: item.status
+            }));
+            const { error: insertError } = await supabase.from('menu_items').insert(defaultRows);
+            if (!insertError) {
+                state.menuItems = DEFAULT_MENU_ITEMS;
+            } else {
+                console.error("Failed to seed Supabase menu", insertError);
+                state.menuItems = DEFAULT_MENU_ITEMS; // fallback
+            }
+        }
+    } catch (err) {
+        console.error("Supabase Error:", err);
+        state.menuItems = DEFAULT_MENU_ITEMS; // fallback
     }
-    
+
     // Load saved language
     state.language = localStorage.getItem("om_shaltet_lang") || "ar";
-    
-    // Initialize empty orders list if not present
-    if (!localStorage.getItem("om_shaltet_orders")) {
-        localStorage.setItem("om_shaltet_orders", JSON.stringify([]));
-    }
 }
 
 /* ==========================================================================
@@ -415,12 +445,21 @@ function checkSession() {
 /* ==========================================================================
    AUTHENTICATION LOGIC (LOGIN / SIGNUP)
    ========================================================================== */
-function handleLogin(email, password) {
-    const users = JSON.parse(localStorage.getItem("om_shaltet_users")) || [];
-    const matchedUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-    
-    if (matchedUser) {
-        state.currentUser = { email: matchedUser.email, role: matchedUser.role };
+async function handleLogin(email, password) {
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .ilike('email', email)
+            .eq('password', password)
+            .single();
+            
+        if (error || !data) {
+            showToast("البريد الإلكتروني أو كلمة المرور غير صحيحة!", "error");
+            return;
+        }
+        
+        state.currentUser = { email: data.email, phone: data.phone, role: data.role, name: data.name };
         
         // Save session
         if (document.getElementById("remember-me").checked) {
@@ -432,42 +471,63 @@ function handleLogin(email, password) {
         
         // Route appropriately
         setTimeout(() => {
-            if (matchedUser.role === "admin") {
+            if (data.role === "admin") {
                 navigateTo("admin");
             } else {
                 navigateTo("customer");
             }
         }, 600);
-    } else {
-        showToast("البريد الإلكتروني أو كلمة المرور غير صحيحة!", "error");
+    } catch (err) {
+        console.error(err);
+        showToast("حدث خطأ أثناء تسجيل الدخول!", "error");
     }
 }
 
-function handleSignup(email, password, role, mobile, address, dob) {
-    const users = JSON.parse(localStorage.getItem("om_shaltet_users")) || [];
-    
-    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-        showToast("هذا البريد الإلكتروني مسجل بالفعل!", "error");
-        return;
-    }
-    
-    const newUser = { email, password, role, mobile, address, dob };
-    users.push(newUser);
-    localStorage.setItem("om_shaltet_users", JSON.stringify(users));
-    
-    // Login directly
-    state.currentUser = { email, role };
-    sessionStorage.setItem("om_shaltet_session", JSON.stringify(state.currentUser));
-    
-    showToast("تم إنشاء الحساب بنجاح! أهلاً بك.", "success");
-    
-    setTimeout(() => {
-        if (role === "admin") {
-            navigateTo("admin");
-        } else {
-            navigateTo("customer");
+async function handleSignup(email, password, role, mobile, address, dob) {
+    try {
+        // Check if email or phone already exists
+        const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .or(`email.ilike.${email},phone.eq.${mobile}`)
+            .maybeSingle();
+            
+        if (existingUser) {
+            showToast("هذا البريد الإلكتروني أو رقم الهاتف مسجل بالفعل!", "error");
+            return;
         }
-    }, 600);
+        
+        const { data, error } = await supabase
+            .from('users')
+            .insert([{
+                email: email,
+                password: password,
+                role: role,
+                phone: mobile,
+                name: email.split('@')[0]
+            }])
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        // Login directly
+        state.currentUser = { email: data.email, phone: data.phone, role: data.role, name: data.name };
+        sessionStorage.setItem("om_shaltet_session", JSON.stringify(state.currentUser));
+        
+        showToast("تم إنشاء الحساب بنجاح! أهلاً بك.", "success");
+        
+        setTimeout(() => {
+            if (data.role === "admin") {
+                navigateTo("admin");
+            } else {
+                navigateTo("customer");
+            }
+        }, 600);
+    } catch (err) {
+        console.error(err);
+        showToast("حدث خطأ أثناء إنشاء الحساب!", "error");
+    }
 }
 
 /* ==========================================================================
@@ -842,7 +902,7 @@ function updateFloatingCart(totalQty) {
     DOM.floatingCartFab.classList.add("visible");
 }
 
-function handleCheckout() {
+async function handleCheckout() {
     if (state.cart.length === 0) return;
     
     const isDelivery = document.querySelector('input[name="delivery-type"][value="delivery"]').checked;
@@ -857,164 +917,202 @@ function handleCheckout() {
     const randomOrderId = "#" + Math.floor(1000 + Math.random() * 9000);
     DOM.orderIdNum.textContent = randomOrderId;
     
-    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
     const newOrder = {
         id: randomOrderId,
-        type: isDelivery ? 'delivery' : 'pickup',
-        location: location,
-        items: [...state.cart],
-        status: 'preparing',
-        timestamp: new Date().toISOString(),
-        customer: state.currentUser ? state.currentUser.email : 'زائر'
+        user_phone: state.currentUser ? state.currentUser.phone : 'زائر',
+        items: state.cart,
+        total: state.cart.reduce((sum, entry) => sum + (entry.item.price * entry.quantity), 0),
+        status: 'pending',
+        delivery_type: isDelivery ? 'delivery' : 'pickup',
+        address: location
     };
-    orders.push(newOrder);
-    localStorage.setItem("om_shaltet_orders", JSON.stringify(orders));
     
-    state.activeOrder = newOrder;
-    
-    DOM.successModal.classList.add("open");
-    
-    // Clear cart
-    state.cart = [];
-    updateCartUI();
+    try {
+        const { error } = await supabase.from('orders').insert([newOrder]);
+        if (error) throw error;
+        
+        state.activeOrder = newOrder;
+        DOM.successModal.classList.add("open");
+        
+        // Clear cart
+        state.cart = [];
+        updateCartUI();
+    } catch (err) {
+        console.error(err);
+        showToast("حدث خطأ أثناء إتمام الطلب!", "error");
+    }
 }
 
 /* ==========================================================================
    TRACK ORDER & ADMIN ORDERS
    ========================================================================== */
-function renderTrackOrder() {
-    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
-    if (!state.activeOrder && state.currentUser) {
-        const userOrders = orders.filter(o => o.customer === state.currentUser.email);
-        if (userOrders.length > 0) {
-            state.activeOrder = userOrders[userOrders.length - 1];
+async function renderTrackOrder() {
+    try {
+        let activeOrder = state.activeOrder;
+        
+        // If no active order in memory, try fetching latest order for current user
+        if (!activeOrder && state.currentUser) {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('user_phone', state.currentUser.phone)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+                
+            if (data) {
+                activeOrder = data;
+                state.activeOrder = activeOrder;
+            }
         }
-    }
-    
-    if (!state.activeOrder) {
-        document.getElementById("active-order-tracking").classList.add("hidden");
-        document.getElementById("no-active-order").classList.remove("hidden");
-        return;
-    }
-    
-    const upToDateOrder = orders.find(o => o.id === state.activeOrder.id);
-    if(upToDateOrder) state.activeOrder = upToDateOrder;
+        
+        if (!activeOrder) {
+            document.getElementById("active-order-tracking").classList.add("hidden");
+            document.getElementById("no-active-order").classList.remove("hidden");
+            return;
+        }
+        
+        // Fetch up-to-date status
+        const { data: upToDateOrder } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('id', activeOrder.id)
+            .single();
+            
+        if (upToDateOrder) {
+            state.activeOrder = upToDateOrder;
+            activeOrder = upToDateOrder;
+        }
 
-    document.getElementById("active-order-tracking").classList.remove("hidden");
-    document.getElementById("no-active-order").classList.add("hidden");
-    
-    document.getElementById("track-order-number").textContent = state.activeOrder.id;
-    document.getElementById("track-order-type").textContent = state.activeOrder.type === 'delivery' ? (state.language === 'en' ? 'Delivery' : 'توصيل') : (state.language === 'en' ? 'Branch Pickup' : 'استلام من الفرع');
-    document.getElementById("track-order-time").textContent = new Date(state.activeOrder.timestamp).toLocaleTimeString();
-    document.getElementById("track-location-text").textContent = state.activeOrder.location;
-    
-    const stepPrep = document.getElementById("step-preparing");
-    const stepTransit = document.getElementById("step-transit");
-    const stepCompleted = document.getElementById("step-completed");
-    const fill = document.getElementById("track-progress-fill");
-    
-    stepPrep.classList.remove("active");
-    stepTransit.classList.remove("active");
-    stepCompleted.classList.remove("active");
-    
-    if (state.activeOrder.status === 'preparing') {
-        stepPrep.classList.add("active");
-        fill.style.width = '33%';
-        document.getElementById("track-countdown").textContent = "20:00";
-    } else if (state.activeOrder.status === 'ready') {
-        stepPrep.classList.add("active");
-        stepTransit.classList.add("active");
-        fill.style.width = '66%';
-        document.getElementById("track-countdown").textContent = "10:00";
-    } else {
-        stepPrep.classList.add("active");
-        stepTransit.classList.add("active");
-        stepCompleted.classList.add("active");
-        fill.style.width = '100%';
-        document.getElementById("track-countdown").textContent = "00:00";
+        document.getElementById("active-order-tracking").classList.remove("hidden");
+        document.getElementById("no-active-order").classList.add("hidden");
+        
+        document.getElementById("track-order-number").textContent = activeOrder.id;
+        document.getElementById("track-order-type").textContent = activeOrder.delivery_type === 'delivery' ? (state.language === 'en' ? 'Delivery' : 'توصيل') : (state.language === 'en' ? 'Branch Pickup' : 'استلام من الفرع');
+        document.getElementById("track-order-time").textContent = new Date(activeOrder.created_at || new Date()).toLocaleTimeString();
+        document.getElementById("track-location-text").textContent = activeOrder.address || activeOrder.delivery_type;
+        
+        const stepPrep = document.getElementById("step-preparing");
+        const stepTransit = document.getElementById("step-transit");
+        const stepCompleted = document.getElementById("step-completed");
+        const fill = document.getElementById("track-progress-fill");
+        
+        stepPrep.classList.remove("active");
+        stepTransit.classList.remove("active");
+        stepCompleted.classList.remove("active");
+        
+        if (activeOrder.status === 'pending' || activeOrder.status === 'preparing') {
+            stepPrep.classList.add("active");
+            fill.style.width = '33%';
+            document.getElementById("track-countdown").textContent = "20:00";
+        } else if (activeOrder.status === 'ready') {
+            stepPrep.classList.add("active");
+            stepTransit.classList.add("active");
+            fill.style.width = '66%';
+            document.getElementById("track-countdown").textContent = "10:00";
+        } else {
+            stepPrep.classList.add("active");
+            stepTransit.classList.add("active");
+            stepCompleted.classList.add("active");
+            fill.style.width = '100%';
+            document.getElementById("track-countdown").textContent = "00:00";
+        }
+        
+        const list = document.getElementById("track-items-list");
+        list.innerHTML = "";
+        let total = 0;
+        const items = Array.isArray(activeOrder.items) ? activeOrder.items : JSON.parse(activeOrder.items || "[]");
+        items.forEach(entry => {
+            total += entry.item.price * entry.quantity;
+            const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
+            list.innerHTML += `<div>${entry.quantity}x ${itemName} - ${entry.item.price} ج.م</div>`;
+        });
+        document.getElementById("track-total-price").textContent = total.toFixed(2) + " ج.م";
+    } catch (err) {
+        console.error(err);
     }
-    
-    const list = document.getElementById("track-items-list");
-    list.innerHTML = "";
-    let total = 0;
-    state.activeOrder.items.forEach(entry => {
-        total += entry.item.price * entry.quantity;
-        const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
-        list.innerHTML += `<div>${entry.quantity}x ${itemName} - ${entry.item.price} ج.م</div>`;
-    });
-    document.getElementById("track-total-price").textContent = total.toFixed(2) + " ج.م";
 }
 
-function renderAdminOrders() {
-    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
-    let filteredOrders = [...orders].reverse();
-    
-    if (state.adminOrdersFilter !== "all") {
-        filteredOrders = filteredOrders.filter(o => o.status === state.adminOrdersFilter);
-    }
-    
-    if (state.adminOrdersSearch.trim() !== "") {
-        const query = state.adminOrdersSearch.toLowerCase();
-        filteredOrders = filteredOrders.filter(o => 
-            o.id.toLowerCase().includes(query) || 
-            o.customer.toLowerCase().includes(query)
-        );
-    }
-    
-    const pendingOrdersCount = orders.filter(o => o.status !== 'completed').length;
-    const badge = document.getElementById("admin-orders-badge");
-    if (pendingOrdersCount > 0) {
-        badge.textContent = pendingOrdersCount;
-        badge.classList.remove("hidden");
-    } else {
-        badge.classList.add("hidden");
-    }
-    
-    const grid = document.getElementById("admin-orders-list-grid");
-    const noResults = document.getElementById("admin-orders-no-results");
-    
-    grid.innerHTML = "";
-    if (filteredOrders.length === 0) {
-        noResults.classList.remove("hidden");
-    } else {
-        noResults.classList.add("hidden");
-        filteredOrders.forEach(order => {
-            const card = document.createElement("div");
-            card.className = "food-card fade-in";
-            card.style.display = "flex";
-            card.style.flexDirection = "column";
-            card.style.padding = "16px";
-            card.style.gap = "12px";
+async function renderAdminOrders() {
+    try {
+        let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
+        
+        if (state.adminOrdersFilter !== "all") {
+            query = query.eq('status', state.adminOrdersFilter);
+        }
+        
+        if (state.adminOrdersSearch.trim() !== "") {
+            const searchTerm = `%${state.adminOrdersSearch.trim()}%`;
+            query = query.or(`id.ilike.${searchTerm},user_phone.ilike.${searchTerm}`);
+        }
+        
+        const { data: orders, error } = await query;
+        if (error) throw error;
+        
+        const { count: pendingCount, error: countError } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .neq('status', 'completed');
             
-            const total = order.items.reduce((sum, entry) => sum + (entry.item.price * entry.quantity), 0);
+        const badge = document.getElementById("admin-orders-badge");
+        if (!countError && pendingCount > 0) {
+            badge.textContent = pendingCount;
+            badge.classList.remove("hidden");
+        } else {
+            badge.classList.add("hidden");
+        }
+        
+        const grid = document.getElementById("admin-orders-list-grid");
+        const noResults = document.getElementById("admin-orders-no-results");
+        
+        grid.innerHTML = "";
+        if (!orders || orders.length === 0) {
+            noResults.classList.remove("hidden");
+        } else {
+            noResults.classList.add("hidden");
             
-            card.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-border); padding-bottom: 8px;">
-                    <h3 style="margin: 0;">${order.id}</h3>
-                    <span class="status-badge" style="background-color: ${order.status === 'completed' ? 'var(--success-color)' : 'var(--primary-color)'}; color: white;">${order.status}</span>
-                </div>
-                <div style="font-size: 0.9rem;">
-                    <strong>${state.language === 'en' ? 'Customer:' : 'الزبون:'}</strong> ${order.customer}<br>
-                    <strong>${state.language === 'en' ? 'Type:' : 'النوع:'}</strong> ${order.type === 'delivery' ? 'توصيل' : 'استلام'}<br>
-                    <strong>${state.language === 'en' ? 'Location:' : 'العنوان:'}</strong> ${order.location}
-                </div>
-                <div style="font-size: 0.85rem; max-height: 80px; overflow-y: auto;">
-                    ${order.items.map(entry => {
-                        const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
-                        return `${entry.quantity}x ${itemName}`;
-                    }).join('<br>')}
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin-top: auto;">
-                    <span>${total.toFixed(2)} ج.م</span>
-                    <select class="admin-order-status-select" data-id="${order.id}" style="padding: 4px; border-radius: 4px; border: 1px solid var(--primary-border);">
-                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${state.language === 'en' ? 'Preparing' : 'قيد التحضير'}</option>
-                        <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${state.language === 'en' ? 'Ready' : 'جاهز'}</option>
-                        <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>${state.language === 'en' ? 'Completed' : 'تم التسليم'}</option>
-                    </select>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
+            orders.forEach(order => {
+                const card = document.createElement("div");
+                card.className = "food-card fade-in";
+                card.style.display = "flex";
+                card.style.flexDirection = "column";
+                card.style.padding = "16px";
+                card.style.gap = "12px";
+                
+                const items = Array.isArray(order.items) ? order.items : JSON.parse(order.items || "[]");
+                const total = items.reduce((sum, entry) => sum + (entry.item.price * entry.quantity), 0);
+                
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-border); padding-bottom: 8px;">
+                        <h3 style="margin: 0;">${order.id}</h3>
+                        <span class="status-badge" style="background-color: ${order.status === 'completed' ? 'var(--success-color)' : 'var(--primary-color)'}; color: white;">${order.status}</span>
+                    </div>
+                    <div style="font-size: 0.9rem;">
+                        <strong>${state.language === 'en' ? 'Customer:' : 'الزبون:'}</strong> ${order.user_phone}<br>
+                        <strong>${state.language === 'en' ? 'Type:' : 'النوع:'}</strong> ${order.delivery_type === 'delivery' ? 'توصيل' : 'استلام'}<br>
+                        <strong>${state.language === 'en' ? 'Location:' : 'العنوان:'}</strong> ${order.address || order.delivery_type}
+                    </div>
+                    <div style="font-size: 0.85rem; max-height: 80px; overflow-y: auto;">
+                        ${items.map(entry => {
+                            const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
+                            return `${entry.quantity}x ${itemName}`;
+                        }).join('<br>')}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin-top: auto;">
+                        <span>${total.toFixed(2)} ج.م</span>
+                        <select class="admin-order-status-select" data-id="${order.id}" style="padding: 4px; border-radius: 4px; border: 1px solid var(--primary-border);">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>${state.language === 'en' ? 'Pending' : 'قيد الانتظار'}</option>
+                            <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${state.language === 'en' ? 'Preparing' : 'قيد التحضير'}</option>
+                            <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${state.language === 'en' ? 'Ready' : 'جاهز'}</option>
+                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>${state.language === 'en' ? 'Completed' : 'تم التسليم'}</option>
+                        </select>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+    } catch (err) {
+        console.error(err);
     }
 }
 
@@ -1386,17 +1484,24 @@ function setupEventListeners() {
     // Admin Order Status Update
     const adminOrdersGrid = document.getElementById("admin-orders-list-grid");
     if (adminOrdersGrid) {
-        adminOrdersGrid.addEventListener("change", (e) => {
+        adminOrdersGrid.addEventListener("change", async (e) => {
             if (e.target.classList.contains("admin-order-status-select")) {
                 const id = e.target.getAttribute("data-id");
                 const status = e.target.value;
-                const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
-                const order = orders.find(o => o.id === id);
-                if (order) {
-                    order.status = status;
-                    localStorage.setItem("om_shaltet_orders", JSON.stringify(orders));
+                
+                try {
+                    const { error } = await supabase
+                        .from('orders')
+                        .update({ status: status })
+                        .eq('id', id);
+                        
+                    if (error) throw error;
+                    
                     showToast("تم تحديث حالة الطلب!", "success");
                     renderAdminOrders();
+                } catch (err) {
+                    console.error(err);
+                    showToast("حدث خطأ أثناء تحديث حالة الطلب!", "error");
                 }
             }
         });
@@ -1406,8 +1511,8 @@ function setupEventListeners() {
 /* ==========================================================================
    INITIALIZATION
    ========================================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-    initDatabase();
+document.addEventListener("DOMContentLoaded", async () => {
+    await initDatabase();
     initTheme();
     initLanguage();
     setupEventListeners();
