@@ -28,7 +28,7 @@
     <!-- Header & Navbar -->
     <header class="main-header">
         <div class="header-container">
-            <div class="logo-area">
+            <div class="logo-area" id="main-logo" style="cursor: pointer;">
                 <span class="logo-text">عم شلتت</span>
                 <span class="logo-subtitle">أصل الطعم الفلاحي</span>
             </div>
@@ -211,8 +211,8 @@
                     </select>
                 </div>
             </div>
-
-            <!-- Food Grid -->
+            
+            <!-- Food Grid (Offers mixed at the top) -->
             <div class="menu-grid-container">
                 <div id="customer-menu-grid" class="food-grid">
                     <!-- Dynamic Items Inject here -->
@@ -429,70 +429,87 @@
         </section>
     </main>
 
-    <!-- ================= SHOPPING CART SIDEBAR drawer ================= -->
-    <div id="cart-drawer" class="cart-drawer">
-        <div class="cart-drawer-overlay"></div>
-        <div class="cart-drawer-content">
-            <div class="cart-header">
-                <h3><i class="fa-solid fa-shopping-basket"></i> سلة المشتريات</h3>
-                <button id="cart-close" class="close-btn">&times;</button>
+    <!-- ================= FLOATING CART FAB ================= -->
+    <button id="floating-cart-fab" class="floating-cart-fab hidden" title="فتح السلة">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span id="floating-fab-badge" class="floating-fab-badge">0</span>
+    </button>
+
+    <!-- ================= SHOPPING CART PAGE ================= -->
+    <section id="cart-view" class="view-section hidden">
+        <div class="container cart-page-container">
+            <div class="cart-page-header text-center" style="margin-bottom: 30px;">
+                <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-primary);">
+                    <i class="fa-solid fa-shopping-basket" style="color: var(--primary-brown);"></i> سلة المشتريات
+                </h2>
+                <p style="color: var(--text-secondary);">راجع طلباتك واختر طريقة الاستلام قبل التأكيد</p>
             </div>
             
-            <div id="cart-items-container" class="cart-items-list">
-                <!-- Cart Items Dynamic Inject -->
-            </div>
-            
-            <div class="cart-footer">
-                <!-- Delivery Mode Options -->
-                <div class="delivery-options-container">
-                    <label class="delivery-options-title" id="lbl-delivery-options-title"><i class="fa-solid fa-truck"></i> طريقة الاستلام:</label>
-                    <div class="delivery-toggle-group">
-                        <label class="delivery-toggle-btn active" id="delivery-type-home">
-                            <input type="radio" name="delivery-type" value="delivery" checked hidden>
-                            <span id="txt-delivery-home">توصيل للمنزل</span>
-                        </label>
-                        <label class="delivery-toggle-btn" id="delivery-type-branch">
-                            <input type="radio" name="delivery-type" value="pickup" hidden>
-                            <span id="txt-delivery-branch">استلام من الفرع</span>
-                        </label>
+            <div class="cart-page-layout">
+                <!-- Column 1: Items -->
+                <div class="cart-items-column box-panel">
+                    <div id="cart-items-container" class="cart-items-list">
+                        <!-- Cart Items Dynamic Inject -->
                     </div>
                 </div>
+                
+                <!-- Column 2: Delivery & Checkout -->
+                <div class="cart-summary-column">
+                    <div class="cart-delivery-section box-panel">
+                        <!-- Delivery Mode Options -->
+                        <div class="delivery-options-container">
+                            <label class="delivery-options-title" id="lbl-delivery-options-title"><i class="fa-solid fa-truck"></i> طريقة الاستلام:</label>
+                            <div class="delivery-toggle-group">
+                                <label class="delivery-toggle-btn active" id="delivery-type-home">
+                                    <input type="radio" name="delivery-type" value="delivery" checked hidden>
+                                    <span id="txt-delivery-home">توصيل للمنزل</span>
+                                </label>
+                                <label class="delivery-toggle-btn" id="delivery-type-branch">
+                                    <input type="radio" name="delivery-type" value="pickup" hidden>
+                                    <span id="txt-delivery-branch">استلام من الفرع</span>
+                                </label>
+                            </div>
+                        </div>
 
-                <!-- Conditional Address/Branch selection -->
-                <div id="delivery-address-group" class="cart-delivery-group">
-                    <label for="cart-delivery-address" id="lbl-delivery-address"><i class="fa-solid fa-map-marker-alt"></i> عنوان التوصيل الحالي:</label>
-                    <input type="text" id="cart-delivery-address" placeholder="أدخل عنوان التوصيل بالتفصيل">
-                </div>
+                        <!-- Conditional Address/Branch selection -->
+                        <div id="delivery-address-group" class="cart-delivery-group">
+                            <label for="cart-delivery-address" id="lbl-delivery-address"><i class="fa-solid fa-map-marker-alt"></i> عنوان التوصيل الحالي:</label>
+                            <input type="text" id="cart-delivery-address" placeholder="أدخل عنوان التوصيل بالتفصيل">
+                        </div>
 
-                <div id="delivery-branch-group" class="cart-delivery-group hidden">
-                    <label for="cart-pickup-branch" id="lbl-pickup-branch"><i class="fa-solid fa-store"></i> اختر الفرع للاستلام:</label>
-                    <select id="cart-pickup-branch">
-                        <option value="فرع التجمع الخامس - شارع التسعين" id="opt-branch-1">فرع التجمع الخامس - شارع التسعين</option>
-                        <option value="فرع وسط البلد - شارع طلعت حرب" id="opt-branch-2">فرع وسط البلد - شارع طلعت حرب</option>
-                        <option value="فرع مدينة نصر - عباس العقاد" id="opt-branch-3">فرع مدينة نصر - عباس العقاد</option>
-                    </select>
+                        <div id="delivery-branch-group" class="cart-delivery-group hidden">
+                            <label for="cart-pickup-branch" id="lbl-pickup-branch"><i class="fa-solid fa-store"></i> اختر الفرع للاستلام:</label>
+                            <select id="cart-pickup-branch">
+                                <option value="فرع التجمع الخامس - شارع التسعين" id="opt-branch-1">فرع التجمع الخامس - شارع التسعين</option>
+                                <option value="فرع وسط البلد - شارع طلعت حرب" id="opt-branch-2">فرع وسط البلد - شارع طلعت حرب</option>
+                                <option value="فرع مدينة نصر - عباس العقاد" id="opt-branch-3">فرع مدينة نصر - عباس العقاد</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-totals-section box-panel" style="margin-top: 20px;">
+                        <div class="cart-summary-row">
+                            <span>المجموع الفرعي:</span>
+                            <span id="cart-subtotal">0.00 ج.م</span>
+                        </div>
+                        <div class="cart-summary-row">
+                            <span>التوصيل:</span>
+                            <span class="free-delivery">مجاني بمناسبة الافتتاح</span>
+                        </div>
+                        <hr class="cart-divider">
+                        <div class="cart-summary-row total-row">
+                            <span>الإجمالي الكلي:</span>
+                            <span id="cart-total">0.00 ج.م</span>
+                        </div>
+                        <button id="cart-checkout-btn" class="btn btn-primary btn-block btn-animate">
+                            <span>تأكيد الطلب (إرسال للمطبخ)</span>
+                            <i class="fa-solid fa-utensils"></i>
+                        </button>
+                    </div>
                 </div>
-
-                <div class="cart-summary-row">
-                    <span>المجموع الفرعي:</span>
-                    <span id="cart-subtotal">0.00 ج.م</span>
-                </div>
-                <div class="cart-summary-row">
-                    <span>التوصيل:</span>
-                    <span class="free-delivery">مجاني بمناسبة الافتتاح</span>
-                </div>
-                <hr class="cart-divider">
-                <div class="cart-summary-row total-row">
-                    <span>الإجمالي الكلي:</span>
-                    <span id="cart-total">0.00 ج.م</span>
-                </div>
-                <button id="cart-checkout-btn" class="btn btn-primary btn-block btn-animate">
-                    <span>تأكيد الطلب (إرسال للمطبخ)</span>
-                    <i class="fa-solid fa-utensils"></i>
-                </button>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- ================= ADD / EDIT ITEM MODAL (ADMIN) ================= -->
     <div id="item-modal" class="modal-wrapper">

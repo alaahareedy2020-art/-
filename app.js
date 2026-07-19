@@ -243,13 +243,16 @@ const DOM = {
     statOutOfStock: document.getElementById("stat-out-of-stock"),
     statRevenue: document.getElementById("stat-revenue"),
     
-    // Cart Drawer
-    cartDrawer: document.getElementById("cart-drawer"),
-    cartClose: document.getElementById("cart-close"),
+    // Cart View
+    cartView: document.getElementById("cart-view"),
     cartItemsContainer: document.getElementById("cart-items-container"),
     cartSubtotal: document.getElementById("cart-subtotal"),
     cartTotal: document.getElementById("cart-total"),
     cartCheckoutBtn: document.getElementById("cart-checkout-btn"),
+    
+    // Floating Cart
+    floatingCartFab: document.getElementById("floating-cart-fab"),
+    floatingFabBadge: document.getElementById("floating-fab-badge"),
     
     // Modals
     itemModal: document.getElementById("item-modal"),
@@ -286,6 +289,10 @@ function navigateTo(viewName) {
     DOM.adminView.classList.remove("active");
     DOM.trackOrderView.classList.add("hidden");
     DOM.trackOrderView.classList.remove("active");
+    if(DOM.cartView) {
+        DOM.cartView.classList.add("hidden");
+        DOM.cartView.classList.remove("active");
+    }
 
     // Activate the requested view
     if (viewName === "auth") {
@@ -346,6 +353,20 @@ function navigateTo(viewName) {
         DOM.langToggle.classList.add("hidden"); // Hide language toggle
         
         renderTrackOrder();
+    } else if (viewName === "cart") {
+        if(DOM.cartView) {
+            DOM.cartView.classList.remove("hidden");
+            void DOM.cartView.offsetWidth;
+            DOM.cartView.classList.add("active");
+        }
+        
+        DOM.userBadge.classList.remove("hidden");
+        DOM.logoutBtn.classList.remove("hidden");
+        DOM.cartToggle.classList.add("hidden");
+        DOM.trackOrderBtn.classList.remove("hidden");
+        DOM.langToggle.classList.add("hidden");
+        
+        updateCartUI();
     }
     
     // Scroll to top
@@ -355,6 +376,30 @@ function navigateTo(viewName) {
 // Authentication Check on startup
 function checkSession() {
     const session = sessionStorage.getItem("om_shaltet_session");
+    
+    // Inject "فطيرة العربي" offer if it doesn't exist
+    const hasOffer = state.menuItems.some(i => i.id === "item_offer_1");
+    if (!hasOffer) {
+        state.menuItems.unshift({
+            id: "item_offer_1",
+            name: {
+                ar: "فطيرة العربي",
+                en: "Al-Arabi Feteer"
+            },
+            description: {
+                ar: "فطيرة العربي الأصلية الغنية بالمكونات الطازجة وحشوة مميزة جداً.",
+                en: "The original Al-Arabi Feteer rich in fresh ingredients and special stuffing."
+            },
+            price: 120,
+            oldPrice: 150,
+            isOffer: true,
+            category: "Meals",
+            image: "assets/feteer_honey.jpg",
+            status: "in-stock"
+        });
+        localStorage.setItem("om_shaltet_menu", JSON.stringify(state.menuItems));
+    }
+    
     if (session) {
         state.currentUser = JSON.parse(session);
         if (state.currentUser.role === "admin") {
@@ -454,44 +499,62 @@ function renderCustomerMenu() {
         filtered.sort((a, b) => (a.name[state.language] || "").localeCompare(b.name[state.language] || "", state.language));
     }
 
+    // Split into offers and regular items
+    const offers = filtered.filter(item => item.isOffer);
+    const regularItems = filtered.filter(item => !item.isOffer);
+    
+    // Helper to create card HTML
+    const createCard = (item, isOfferItem) => {
+        const card = document.createElement("div");
+        card.className = "food-card fade-in";
+        if (isOfferItem) card.classList.add("offer-card");
+        
+        const isOutOfStock = item.status === "out-of-stock";
+        const badgeHTML = isOutOfStock 
+            ? `<span class="status-badge out-of-stock">غير متوفر</span>` 
+            : `<span class="status-badge">متوفر</span>`;
+        
+        const catArabic = translateCategory(item.category);
+        
+        const priceHTML = (isOfferItem && item.oldPrice) 
+            ? `<span class="old-price">${item.oldPrice} ج.م</span> <span class="food-card-price offer-price">${item.price} ج.م</span>`
+            : `<span class="food-card-price">${item.price} ج.م</span>`;
+
+        card.innerHTML = `
+            ${isOfferItem ? '<div class="offer-badge">عرض خاص 🔥</div>' : ''}
+            <div class="food-card-img-wrapper">
+                <img src="${item.image}" alt="${item.name[state.language]}" class="food-card-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+                <span class="category-tag">${catArabic}</span>
+                ${badgeHTML}
+            </div>
+            <div class="food-card-info">
+                <div class="food-card-title-row">
+                    <h3 class="food-card-title">${item.name[state.language]}</h3>
+                    <div class="price-container">${priceHTML}</div>
+                </div>
+                <p class="food-card-desc">${item.description[state.language]}</p>
+                <div class="food-card-actions">
+                    <button class="btn btn-primary btn-block btn-animate add-to-cart-btn" data-id="${item.id}" ${isOutOfStock ? 'disabled' : ''}>
+                        <i class="fa-solid fa-cart-plus"></i>
+                        <span>${isOutOfStock ? (state.language === 'en' ? 'Out of Stock' : 'غير متوفر حالياً') : (state.language === 'en' ? 'Add to Cart' : 'أضف إلى السلة')}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        return card;
+    };
+
+    // Combine offers first, then regular items
+    const allItems = [...offers, ...regularItems];
+
     // Render Items
     DOM.customerMenuGrid.innerHTML = "";
-    if (filtered.length === 0) {
+    if (allItems.length === 0) {
         DOM.customerNoResults.classList.remove("hidden");
     } else {
         DOM.customerNoResults.classList.add("hidden");
-        filtered.forEach(item => {
-            const card = document.createElement("div");
-            card.className = "food-card fade-in";
-            
-            const isOutOfStock = item.status === "out-of-stock";
-            const badgeHTML = isOutOfStock 
-                ? `<span class="status-badge out-of-stock">غير متوفر</span>` 
-                : `<span class="status-badge">متوفر</span>`;
-            
-            const catArabic = translateCategory(item.category);
-            
-            card.innerHTML = `
-                <div class="food-card-img-wrapper">
-                    <img src="${item.image}" alt="${item.name[state.language]}" class="food-card-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-                    <span class="category-tag">${catArabic}</span>
-                    ${badgeHTML}
-                </div>
-                <div class="food-card-info">
-                    <div class="food-card-title-row">
-                        <h3 class="food-card-title">${item.name[state.language]}</h3>
-                        <span class="food-card-price">${item.price} ج.م</span>
-                    </div>
-                    <p class="food-card-desc">${item.description[state.language]}</p>
-                    <div class="food-card-actions">
-                        <button class="btn btn-primary btn-block btn-animate add-to-cart-btn" data-id="${item.id}" ${isOutOfStock ? 'disabled' : ''}>
-                            <i class="fa-solid fa-cart-plus"></i>
-                            <span>${isOutOfStock ? (state.language === 'en' ? 'Out of Stock' : 'غير متوفر حالياً') : (state.language === 'en' ? 'Add to Cart' : 'أضف إلى السلة')}</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-            DOM.customerMenuGrid.appendChild(card);
+        allItems.forEach(item => {
+            DOM.customerMenuGrid.appendChild(createCard(item, item.isOffer));
         });
     }
 }
@@ -681,14 +744,6 @@ function handleDeleteItem(itemId) {
 /* ==========================================================================
    SHOPPING CART LOGIC
    ========================================================================== */
-function toggleCartDrawer(open) {
-    if (open) {
-        DOM.cartDrawer.classList.add("open");
-        updateCartUI();
-    } else {
-        DOM.cartDrawer.classList.remove("open");
-    }
-}
 
 function addToCart(itemId) {
     const item = state.menuItems.find(i => i.id === itemId);
@@ -701,8 +756,11 @@ function addToCart(itemId) {
         state.cart.push({ item, quantity: 1 });
     }
     
+    state.lastAddedItemId = itemId;
+    
     updateCartUI();
-    showToast(`تمت إضافة "${item.name}" إلى السلة!`, "success");
+    const itemName = (item.name && item.name[state.language]) || item.name.ar || item.name;
+    showToast(`تمت إضافة "${itemName}" إلى السلة!`, "success");
 }
 
 function updateCartQuantity(itemId, delta) {
@@ -745,13 +803,14 @@ function updateCartUI() {
             const itemCost = entry.item.price * entry.quantity;
             subtotal += itemCost;
             
+            const itemName = (entry.item.name && entry.item.name[state.language]) || entry.item.name.ar || entry.item.name;
             const cartItemDiv = document.createElement("div");
             cartItemDiv.className = "cart-item fade-in";
             cartItemDiv.innerHTML = `
-                <img src="${entry.item.image}" alt="${entry.item.name}" class="cart-item-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+                <img src="${entry.item.image}" alt="${itemName}" class="cart-item-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
                 <div class="cart-item-details">
-                    <div class="cart-item-name">${entry.item.name}</div>
-                    <div class="cart-item-price">${entry.item.price} ج.م</div>
+                    <div class="cart-item-name">${itemName}</div>
+                    <div class="cart-item-price">${itemCost} ج.م</div>
                     <div class="cart-item-qty-control">
                         <button class="qty-btn dec-qty" data-id="${entry.item.id}">-</button>
                         <span class="qty-val">${entry.quantity}</span>
@@ -767,6 +826,20 @@ function updateCartUI() {
     DOM.cartBadge.textContent = totalQty;
     DOM.cartSubtotal.textContent = `${subtotal.toFixed(2)} ج.م`;
     DOM.cartTotal.textContent = `${subtotal.toFixed(2)} ج.م`;
+    
+    updateFloatingCart(totalQty);
+}
+
+function updateFloatingCart(totalQty) {
+    if (!DOM.floatingCartFab) return;
+    
+    if (totalQty === 0) {
+        DOM.floatingCartFab.classList.remove("visible");
+        return;
+    }
+    
+    DOM.floatingFabBadge.textContent = totalQty;
+    DOM.floatingCartFab.classList.add("visible");
 }
 
 function handleCheckout() {
@@ -799,7 +872,6 @@ function handleCheckout() {
     
     state.activeOrder = newOrder;
     
-    toggleCartDrawer(false);
     DOM.successModal.classList.add("open");
     
     // Clear cart
@@ -1055,6 +1127,24 @@ function translateCategory(category) {
    EVENT LISTENERS BINDING
    ========================================================================== */
 function setupEventListeners() {
+    // Main Logo click
+    const mainLogo = document.getElementById("main-logo");
+    if (mainLogo) {
+        mainLogo.addEventListener("click", () => {
+            checkSession(); 
+        });
+    }
+
+    // Cart View Navigation
+    DOM.cartToggle.addEventListener("click", () => navigateTo("cart"));
+
+    // Floating Cart Buttons
+    if (DOM.floatingCartFab) {
+        DOM.floatingCartFab.addEventListener("click", () => {
+            navigateTo("cart");
+        });
+    }
+
     // Theme Toggle
     DOM.themeToggle.addEventListener("click", toggleTheme);
     
@@ -1165,10 +1255,7 @@ function setupEventListeners() {
         }
     });
     
-    // Cart Drawer Toggle Actions
-    DOM.cartToggle.addEventListener("click", () => toggleCartDrawer(true));
-    DOM.cartClose.addEventListener("click", () => toggleCartDrawer(false));
-    document.querySelector(".cart-drawer-overlay").addEventListener("click", () => toggleCartDrawer(false));
+    // Cart Drawer Toggle Actions (Removed for Full Page Cart)
     
     // Cart Item Action Handling
     DOM.cartItemsContainer.addEventListener("click", (e) => {
