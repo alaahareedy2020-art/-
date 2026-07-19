@@ -3,7 +3,12 @@
    ========================================================================== */
 const SUPABASE_URL = 'https://pioeppwgetbxgiuzcfjs.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_LZ48twcMeVYZ94wil5JGjg_12gkvl9U';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase = null;
+if (window.supabase) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} else {
+    console.warn("Supabase library not found! Please make sure index.html is updated.");
+}
 
 const DEFAULT_MENU_ITEMS = [
     {
@@ -171,6 +176,7 @@ async function initDatabase() {
     }
 
     try {
+        if (!supabase) throw new Error("Supabase client is not initialized.");
         // Fetch Menu from Supabase
         const { data: menuData, error: menuError } = await supabase.from('menu_items').select('*');
         if (menuError) throw menuError;
@@ -447,10 +453,12 @@ function checkSession() {
    ========================================================================== */
 async function handleLogin(email, password) {
     try {
+        if (!supabase) throw new Error("Supabase client is not initialized.");
+        
         const { data, error } = await supabase
             .from('users')
             .select('*')
-            .ilike('email', email)
+            .or(`email.ilike.${email},phone.eq.${email}`)
             .eq('password', password)
             .single();
             
@@ -485,6 +493,8 @@ async function handleLogin(email, password) {
 
 async function handleSignup(email, password, role, mobile, address, dob) {
     try {
+        if (!supabase) throw new Error("Supabase client is not initialized.");
+        
         // Check if email or phone already exists
         const { data: existingUser } = await supabase
             .from('users')
@@ -928,6 +938,8 @@ async function handleCheckout() {
     };
     
     try {
+        if (!supabase) throw new Error("Supabase client is not initialized.");
+        
         const { error } = await supabase.from('orders').insert([newOrder]);
         if (error) throw error;
         
@@ -952,17 +964,19 @@ async function renderTrackOrder() {
         
         // If no active order in memory, try fetching latest order for current user
         if (!activeOrder && state.currentUser) {
-            const { data, error } = await supabase
-                .from('orders')
-                .select('*')
-                .eq('user_phone', state.currentUser.phone)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-                
-            if (data) {
-                activeOrder = data;
-                state.activeOrder = activeOrder;
+            if (supabase) {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('user_phone', state.currentUser.phone)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                    
+                if (data) {
+                    activeOrder = data;
+                    state.activeOrder = activeOrder;
+                }
             }
         }
         
@@ -973,15 +987,17 @@ async function renderTrackOrder() {
         }
         
         // Fetch up-to-date status
-        const { data: upToDateOrder } = await supabase
-            .from('orders')
-            .select('*')
-            .eq('id', activeOrder.id)
-            .single();
-            
-        if (upToDateOrder) {
-            state.activeOrder = upToDateOrder;
-            activeOrder = upToDateOrder;
+        if (supabase) {
+            const { data: upToDateOrder } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('id', activeOrder.id)
+                .single();
+                
+            if (upToDateOrder) {
+                state.activeOrder = upToDateOrder;
+                activeOrder = upToDateOrder;
+            }
         }
 
         document.getElementById("active-order-tracking").classList.remove("hidden");
@@ -1035,6 +1051,8 @@ async function renderTrackOrder() {
 
 async function renderAdminOrders() {
     try {
+        if (!supabase) throw new Error("Supabase client is not initialized.");
+        
         let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
         
         if (state.adminOrdersFilter !== "all") {
@@ -1490,6 +1508,8 @@ function setupEventListeners() {
                 const status = e.target.value;
                 
                 try {
+                    if (!supabase) throw new Error("Supabase client is not initialized.");
+                    
                     const { error } = await supabase
                         .from('orders')
                         .update({ status: status })
