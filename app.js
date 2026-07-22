@@ -1543,11 +1543,18 @@ function setupEventListeners() {
    INITIALIZATION
    ========================================================================== */
 async function initApp() {
-    await initDatabase();
+    // Initialize UI elements and event listeners immediately
     initTheme();
     initLanguage();
     setupEventListeners();
-    checkSession();
+    
+    // Load database and check session in the background
+    try {
+        await initDatabase();
+        checkSession();
+    } catch (err) {
+        console.error("App initialization failed:", err);
+    }
 }
 
 if (document.readyState === "loading") {
