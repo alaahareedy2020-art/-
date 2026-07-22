@@ -1,8 +1,8 @@
 /* ==========================================================================
    APP STATE & INITIALIZATION
    ========================================================================== */
-const SUPABASE_URL = 'SUPABASE_URL_PLACEHOLDER' === 'SUPABASE_URL' + '_PLACEHOLDER' ? 'https://pioeppwgetbxgiuzcfjs.supabase.co' : 'SUPABASE_URL_PLACEHOLDER';
-const SUPABASE_KEY = 'SUPABASE_KEY_PLACEHOLDER' === 'SUPABASE_KEY' + '_PLACEHOLDER' ? 'sb_publishable_LZ48twcMeVYZ94wil5JGjg_12gkvl9U' : 'SUPABASE_KEY_PLACEHOLDER';
+const SUPABASE_URL = 'https://pioeppwgetbxgiuzcfjs.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_LZ48twcMeVYZ94wil5JGjg_12gkvl9U';
 let supabase = null;
 if (window.supabase) {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
