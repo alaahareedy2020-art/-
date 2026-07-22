@@ -437,11 +437,17 @@ function checkSession() {
     }
     
     if (session) {
-        state.currentUser = JSON.parse(session);
-        if (state.currentUser.role === "admin") {
-            navigateTo("admin");
-        } else {
-            navigateTo("customer");
+        try {
+            state.currentUser = JSON.parse(session);
+            if (state.currentUser.role === "admin") {
+                navigateTo("admin");
+            } else {
+                navigateTo("customer");
+            }
+        } catch (e) {
+            console.error("Failed to parse session:", e);
+            sessionStorage.removeItem("om_shaltet_session");
+            navigateTo("auth");
         }
     } else {
         navigateTo("auth");
@@ -458,7 +464,7 @@ async function handleLogin(email, password) {
         const { data, error } = await supabase
             .from('users')
             .select('*')
-            .or(`email.ilike.${email},phone.eq.${email}`)
+            .or(`email.ilike."${email}",phone.eq."${email}"`)
             .eq('password', password)
             .single();
             
@@ -498,8 +504,8 @@ async function handleSignup(email, password, role, mobile, address, dob) {
         // Check if email or phone already exists
         const { data: existingUser } = await supabase
             .from('users')
-            .select('id')
-            .or(`email.ilike.${email},phone.eq.${mobile}`)
+            .select('*')
+            .or(`email.ilike."${email}",phone.eq."${mobile}"`)
             .maybeSingle();
             
         if (existingUser) {
@@ -655,7 +661,12 @@ function renderAdminDashboard() {
     const categoriesSet = new Set(state.menuItems.map(item => item.category));
     
     // Revenue calculation
-    const orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+    let orders = [];
+    try {
+        orders = JSON.parse(localStorage.getItem("om_shaltet_orders")) || [];
+    } catch (e) {
+        console.error("Failed to parse local orders:", e);
+    }
     let revenue = 0;
     orders.forEach(order => {
         if (order.status === 'completed') {
