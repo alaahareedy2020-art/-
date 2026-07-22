@@ -4,14 +4,14 @@
 const SUPABASE_URL = 'https://pioeppwgetbxgiuzcfjs.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_LZ48twcMeVYZ94wil5JGjg_12gkvl9U';
 let supabase = null;
-
 if (window.supabase && typeof window.supabase.createClient === 'function') {
     supabase = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
+    console.log("Supabase client initialized successfully");
 } else {
-    console.error('Supabase library is not loaded.');
+    console.error("Supabase library is NOT loaded");
 }
 
 const DEFAULT_MENU_ITEMS = [
